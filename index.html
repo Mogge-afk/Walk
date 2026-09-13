@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hundpromenaden</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0d1a0b; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: system-ui, sans-serif; }
+#gw { width: 380px; border-radius: 12px; overflow: hidden; user-select: none; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+#sc2 { position: relative; height: 270px; overflow: hidden; background: #1a2e18; }
+canvas#bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+#dogs-wrap { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+#enemy3 { position: absolute; font-size: 40px; top: 60px; left: 50%; transform: translateX(-50%) scale(0.3); display: none; transition: top 1s ease, transform 1s ease; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
+#enemy3.near { top: 110px; transform: translateX(-50%) scale(1); }
+#flash3 { position: absolute; top: 42%; left: 50%; transform: translate(-50%,-50%); font-size: 19px; font-weight: 500; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.9); display: none; white-space: nowrap; pointer-events: none; }
+#lv-b { position: absolute; top: 9px; left: 11px; background: rgba(0,0,0,0.5); color: #c8ddb0; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+#sc-b { position: absolute; top: 9px; right: 11px; background: rgba(0,0,0,0.5); color: #c8ddb0; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+#cross-label { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.55); color: #d4efc4; font-size: 11px; padding: 2px 10px; border-radius: 12px; display: none; white-space: nowrap; }
+#ui3 { padding: 11px 13px; background: #111e0f; }
+#st3 { font-size: 13px; color: #b8d8a0; text-align: center; margin-bottom: 9px; min-height: 17px; }
+#hp3 { display: flex; justify-content: center; gap: 5px; margin-bottom: 9px; }
+.pw { font-size: 15px; }
+#bn3 { display: flex; gap: 7px; flex-wrap: wrap; }
+.gb { flex: 1; min-width: 72px; padding: 9px 5px; background: rgba(255,255,255,0.09); border: 0.5px solid rgba(255,255,255,0.20); border-radius: 8px; color: #dff0d0; font-size: 12px; cursor: pointer; text-align: center; transition: background 0.12s, transform 0.1s; }
+.gb:hover { background: rgba(255,255,255,0.18); }
+.gb:active { transform: scale(0.96); }
+.gb.at { background: rgba(200,55,35,0.26); border-color: rgba(220,75,55,0.48); }
+.gb.at:hover { background: rgba(200,55,35,0.42); }
+.gb.pt { background: rgba(50,120,50,0.26); border-color: rgba(70,170,70,0.42); }
+.gb.pt:hover { background: rgba(50,120,50,0.42); }
+</style>
+</head>
+<body>
+<div id="gw">
+<div id="sc2">
+  <canvas id="bg" width="380" height="270"></canvas>
+  <div id="dogs-wrap">
+    <svg id="dogs-svg2" width="150" height="115" viewBox="0 0 150 115" xmlns="http://www.w3.org/2000/svg">
+      <line x1="8" y1="115" x2="44" y2="58" stroke="#8a7060" stroke-width="2" opacity="0.8"/>
+      <line x1="142" y1="115" x2="106" y2="58" stroke="#8a7060" stroke-width="2" opacity="0.8"/>
+      <g id="dL">
+        <ellipse cx="44" cy="78" rx="23" ry="15" fill="#3a3a3a"/>
+        <ellipse cx="33" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
+        <ellipse cx="55" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
+        <ellipse cx="44" cy="87" rx="11" ry="8" fill="#484848"/>
+        <rect x="27" y="87" width="7" height="17" rx="3" fill="#2a2a2a"/>
+        <rect x="37" y="88" width="7" height="16" rx="3" fill="#333"/>
+        <rect x="47" y="88" width="7" height="16" rx="3" fill="#2a2a2a"/>
+        <rect x="57" y="87" width="7" height="17" rx="3" fill="#333"/>
+        <path d="M21 73 Q8 62 12 51" stroke="#484848" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <ellipse cx="44" cy="60" rx="17" ry="15" fill="#2d2d2d"/>
+        <ellipse cx="29" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(-13 29 56)"/>
+        <ellipse cx="59" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(13 59 56)"/>
+        <ellipse cx="42" cy="62" rx="9" ry="8" fill="#888" opacity="0.35"/>
+        <rect x="32" y="68" width="24" height="4" rx="2" fill="#c03030"/>
+      </g>
+      <g id="dR">
+        <ellipse cx="106" cy="78" rx="23" ry="15" fill="#6b3d1e"/>
+        <ellipse cx="95" cy="82" rx="9" ry="11" fill="#5a3018"/>
+        <ellipse cx="117" cy="82" rx="9" ry="11" fill="#5a3018"/>
+        <ellipse cx="106" cy="87" rx="11" ry="8" fill="#7a4828"/>
+        <rect x="89" y="87" width="7" height="17" rx="3" fill="#5a3018"/>
+        <rect x="99" y="88" width="7" height="16" rx="3" fill="#6b3d1e"/>
+        <rect x="109" y="88" width="7" height="16" rx="3" fill="#5a3018"/>
+        <rect x="119" y="87" width="7" height="17" rx="3" fill="#6b3d1e"/>
+        <path d="M129 73 Q142 62 138 51" stroke="#7a4828" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M136 55 Q142 50 139 45" stroke="#d4c8a8" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="106" cy="60" rx="17" ry="15" fill="#6b3d1e"/>
+        <ellipse cx="91" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(-13 91 56)"/>
+        <ellipse cx="121" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(13 121 56)"/>
+        <ellipse cx="104" cy="62" rx="9" ry="8" fill="#c8a46e" opacity="0.3"/>
+        <rect x="94" y="68" width="24" height="4" rx="2" fill="#2060a0"/>
+      </g>
+    </svg>
+  </div>
+  <div id="enemy3"></div>
+  <div id="flash3"></div>
+  <div id="lv-b">Nivå <span id="lv">1</span></div>
+  <div id="sc-b">⭐ <span id="sc">0</span></div>
+  <div id="cross-label"></div>
+</div>
+<div id="ui3">
+  <div id="hp3"><span class="pw" id="w1">🐾</span><span class="pw" id="w2">🐾</span><span class="pw" id="w3">🐾</span></div>
+  <div id="st3">Redo att ge sig ut?</div>
+  <div id="bn3"><div class="gb" onclick="G.start()">🐕 Börja promenaden</div></div>
+</div>
+</div>
+
+<script>
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+
+const TREES_L = [
+  {x:15,h:72,tw:24,c:'#1a3a0a'},{x:48,h:80,tw:22,c:'#224a10'},
+  {x:80,h:65,tw:20,c:'#1e4210'},{x:112,h:75,tw:19,c:'#254d14'},
+  {x:138,h:60,tw:17,c:'#1a3a0a'}
+];
+const TREES_R = [
+  {x:242,h:70,tw:22,c:'#254d14'},{x:274,h:82,tw:24,c:'#1e4210'},
+  {x:308,h:68,tw:21,c:'#224a10'},{x:340,h:76,tw:20,c:'#1a3a0a'},
+  {x:366,h:62,tw:18,c:'#254d14'}
+];
+
+const CROSSINGS = [
+  {name:'T-korsning',      dirs:['⬅ Vänster','➡ Höger'],             pt:1},
+  {name:'Trevägskorsning', dirs:['⬅ Vänster','⬆ Rakt','➡ Höger'],    pt:2},
+  {name:'Kurva vänster',   dirs:['⬅ Sväng','⬆ Fortsätt rakt'],        pt:3},
+  {name:'Kurva höger',     dirs:['⬆ Fortsätt rakt','➡ Sväng'],        pt:4},
+  {name:'Gaffelkorsning',  dirs:['↖ Bergssidan','↗ Sjösidan'],        pt:2},
+  {name:'Bro eller omväg', dirs:['⬆ Bro','↙ Skog'],                   pt:0},
+];
+
+const ENEMIES = [
+  {icon:'🦊',name:'räv',      lv:1,good:['skälla','bita'], hint:'Rävar skyr högt ljud!'},
+  {icon:'🐦',name:'korp',     lv:1,good:['hoppa','skälla'],hint:'Fåglar hatar stora rörelser!'},
+  {icon:'🦔',name:'igelkott', lv:2,good:['hoppa'],         hint:'Taggar gör ont att bita!'},
+  {icon:'🦌',name:'rådjur',   lv:2,good:['skälla','bita'], hint:'Rådjur skräms av ljud!'},
+  {icon:'🐺',name:'varg',     lv:3,good:['bita'],          hint:'Möt vargen med styrka!'},
+  {icon:'🐗',name:'vildsvin', lv:3,good:['hoppa','skälla'],hint:'Spring inte rakt mot galten!'},
+];
+
+let walkOffset=0, walkAnim=null, dogBob=0, tailWag=0;
+let leafParticles=[];
+
+function initLeaves(){
+  leafParticles=[];
+  for(let i=0;i<16;i++){
+    leafParticles.push({
+      x:20+Math.random()*340, y:140+Math.random()*120,
+      vy:0.2+Math.random()*0.5, vx:-0.2+Math.random()*0.4,
+      size:3+Math.random()*5,
+      color:['#6b4a1e','#8a6030','#7a5528','#5a3a10'][Math.floor(Math.random()*4)],
+      rot:Math.random()*360
+    });
+  }
+}
+
+function drawTrees(list){
+  list.forEach(t=>{
+    ctx.fillStyle='#3a2a1a';
+    ctx.fillRect(t.x-4,106-t.h+28,8,t.h);
+    ctx.fillStyle=t.c;
+    ctx.beginPath();
+    ctx.ellipse(t.x,106-t.h+16,t.tw,t.h*0.55,0,0,Math.PI*2);
+    ctx.fill();
+  });
+}
+
+function drawScene(pt){
+  ctx.clearRect(0,0,380,270);
+  let sky=ctx.createLinearGradient(0,0,0,108);
+  sky.addColorStop(0,'#9ab880'); sky.addColorStop(1,'#c0d89a');
+  ctx.fillStyle=sky; ctx.fillRect(0,0,380,108);
+  ctx.save(); ctx.globalAlpha=0.06; ctx.fillStyle='#ffffcc';
+  [[190,0,145,108],[145,0,105,108],[230,0,175,108]].forEach(([x,y,x2,y2])=>{
+    ctx.beginPath(); ctx.moveTo(x-16,y); ctx.lineTo(x+16,y);
+    ctx.lineTo(x2+28,y2); ctx.lineTo(x2-28,y2); ctx.fill();
+  });
+  ctx.restore();
+  ctx.fillStyle='#3d2a1a'; ctx.fillRect(0,108,380,162);
+  ctx.fillStyle='#2d4a1e'; ctx.fillRect(0,60,155,210);
+  drawTrees(TREES_L);
+  ctx.fillStyle='#2d5018'; ctx.beginPath(); ctx.ellipse(70,110,72,13,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#2d4a1e'; ctx.fillRect(225,60,155,210);
+  drawTrees(TREES_R);
+  ctx.fillStyle='#264a14'; ctx.beginPath(); ctx.ellipse(310,110,72,13,0,0,Math.PI*2); ctx.fill();
+  drawPath(pt);
+  leafParticles.forEach(l=>{
+    ctx.save(); ctx.translate(l.x,l.y); ctx.rotate(l.rot*Math.PI/180);
+    ctx.fillStyle=l.color; ctx.beginPath();
+    ctx.ellipse(0,0,l.size,l.size*0.45,0,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  });
+  ctx.save(); ctx.globalAlpha=0.15; ctx.fillStyle='#b0a090';
+  let off=walkOffset%38;
+  for(let i=0;i<7;i++){
+    let yy=142+i*38-off, ww=8+i*9;
+    ctx.beginPath(); ctx.ellipse(190,yy,ww,2.5,0,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawPath(pt){
+  ctx.save();
+  const g=ctx.createLinearGradient(0,108,0,270);
+  g.addColorStop(0,'#7a6050'); g.addColorStop(1,'#6a5040');
+  ctx.fillStyle=g;
+  if(pt===0){
+    ctx.beginPath(); ctx.moveTo(162,108); ctx.lineTo(218,108); ctx.lineTo(340,270); ctx.lineTo(40,270); ctx.fill();
+    [[188,162,9,4],[194,206,13,5],[180,243,10,4]].forEach(([x,y,rx,ry])=>{
+      ctx.fillStyle='#9a8878'; ctx.beginPath(); ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2); ctx.fill();
+    });
+    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([8,14]);
+    ctx.beginPath(); ctx.moveTo(190,116); ctx.lineTo(190,268); ctx.stroke();
+    ctx.setLineDash([]);
+  } else if(pt===1){
+    ctx.beginPath(); ctx.moveTo(165,108); ctx.lineTo(215,108); ctx.lineTo(310,240); ctx.lineTo(70,240); ctx.fill();
+    ctx.fillStyle='#6a5040'; ctx.fillRect(0,220,145,50); ctx.fillRect(235,220,145,50);
+    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([6,12]);
+    ctx.beginPath(); ctx.moveTo(190,116); ctx.lineTo(190,235); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,245); ctx.lineTo(380,245); ctx.stroke();
+    ctx.setLineDash([]);
+    lbl('T-korsning',190,226);
+  } else if(pt===2){
+    ctx.beginPath(); ctx.moveTo(168,108); ctx.lineTo(212,108); ctx.lineTo(240,200); ctx.lineTo(140,200); ctx.fill();
+    ctx.fillStyle='#6a5040';
+    ctx.beginPath(); ctx.moveTo(40,270); ctx.lineTo(145,200); ctx.lineTo(195,200); ctx.lineTo(100,270); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(280,270); ctx.lineTo(185,200); ctx.lineTo(235,200); ctx.lineTo(340,270); ctx.fill();
+    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([6,12]);
+    ctx.beginPath(); ctx.moveTo(190,116); ctx.lineTo(190,200); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(190,200); ctx.lineTo(70,268); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(190,200); ctx.lineTo(310,268); ctx.stroke();
+    ctx.setLineDash([]);
+    lbl('Gaffelkorsning',190,190);
+  } else if(pt===3){
+    ctx.beginPath(); ctx.moveTo(165,108); ctx.lineTo(215,108); ctx.lineTo(130,270); ctx.lineTo(70,270); ctx.fill();
+    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([7,13]);
+    ctx.beginPath(); ctx.moveTo(190,116); ctx.quadraticCurveTo(185,200,100,268); ctx.stroke();
+    ctx.setLineDash([]);
+    lbl('Kurva vänster',190,228);
+  } else {
+    ctx.beginPath(); ctx.moveTo(165,108); ctx.lineTo(215,108); ctx.lineTo(310,270); ctx.lineTo(250,270); ctx.fill();
+    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([7,13]);
+    ctx.beginPath(); ctx.moveTo(190,116); ctx.quadraticCurveTo(195,200,280,268); ctx.stroke();
+    ctx.setLineDash([]);
+    lbl('Kurva höger',190,228);
+  }
+  ctx.restore();
+}
+
+function lbl(txt,x,y){
+  ctx.fillStyle='rgba(0,0,0,0.42)';
+  ctx.beginPath(); ctx.roundRect(x-40,y-14,80,20,4); ctx.fill();
+  ctx.fillStyle='#d4efc4'; ctx.font='10px system-ui'; ctx.textAlign='center';
+  ctx.fillText(txt,x,y);
+}
+
+function animateWalk(){
+  walkOffset+=1.3;
+  leafParticles.forEach(l=>{
+    l.y+=l.vy; l.x+=l.vx; l.rot+=0.4;
+    if(l.y>278){l.y=135; l.x=20+Math.random()*340;}
+  });
+  drawScene(G.curPath);
+  dogBob+=0.11;
+  const dw=document.getElementById('dogs-wrap');
+  const bobY=Math.sin(dogBob)*2.5;
+  const sc=1+(G.level-1)*0.10;
+  dw.style.transform=`translateX(-50%) translateY(${bobY}px) scale(${Math.min(sc,1.5)})`;
+  tailWag+=0.22;
+  const p0=document.querySelector('#dL path');
+  const p1=document.querySelector('#dR path');
+  if(p0) p0.setAttribute('d',`M21 73 Q${8+Math.sin(tailWag)*5} ${62+Math.cos(tailWag)*3} 12 51`);
+  if(p1) p1.setAttribute('d',`M129 73 Q${142+Math.sin(tailWag)*5} ${62+Math.cos(tailWag)*3} 138 51`);
+  walkAnim=requestAnimationFrame(animateWalk);
+}
+
+const G={
+  hp:3,score:0,level:1,wins:0,phase:'idle',enemy:null,curPath:0,
+  rnd(a){return a[Math.floor(Math.random()*a.length)];},
+  setSt(t){document.getElementById('st3').textContent=t;},
+  updHP(){['w1','w2','w3'].forEach((id,i)=>document.getElementById(id).textContent=i<this.hp?'🐾':'💔');},
+  flash(msg,good){
+    const el=document.getElementById('flash3');
+    el.textContent=msg; el.style.color=good?'#90ff90':'#ff9090';
+    el.style.display='block'; setTimeout(()=>el.style.display='none',1300);
+  },
+  showBtns(arr){
+    const c=document.getElementById('bn3'); c.innerHTML='';
+    arr.forEach(b=>{
+      const d=document.createElement('div');
+      d.className='gb '+(b.cls||'');
+      d.textContent=b.label; d.onclick=b.fn; c.appendChild(d);
+    });
+  },
+  start(){
+    this.hp=3;this.score=0;this.level=1;this.wins=0;
+    document.getElementById('lv').textContent=1;
+    document.getElementById('sc').textContent=0;
+    this.updHP(); initLeaves();
+    if(!walkAnim) animateWalk();
+    this.crossPhase();
+  },
+  crossPhase(){
+    this.phase='walking';
+    const cross=this.rnd(CROSSINGS);
+    this.curPath=cross.pt;
+    document.getElementById('cross-label').textContent=cross.name;
+    document.getElementById('cross-label').style.display='block';
+    this.setSt(cross.name+' framför er!');
+    this.showBtns(cross.dirs.map(dir=>({
+      label:dir,cls:'pt',
+      fn:()=>{
+        document.getElementById('cross-label').style.display='none';
+        this.setSt('Ni rör er framåt...');
+        setTimeout(()=>this.spawnEnemy(),1100);
+      }
+    })));
+  },
+  spawnEnemy(){
+    const pool=ENEMIES.filter(e=>e.lv<=Math.min(this.level,3));
+    this.enemy=this.rnd(pool);
+    const el=document.getElementById('enemy3');
+    el.textContent=this.enemy.icon; el.style.display='block'; el.classList.remove('near');
+    setTimeout(()=>el.classList.add('near'),80);
+    setTimeout(()=>{this.setSt(`En ${this.enemy.name}! ${this.enemy.hint}`); this.fightPhase();},1000);
+  },
+  fightPhase(){
+    this.phase='fighting';
+    this.showBtns([
+      {label:'🦘 Hoppa', cls:'at',fn:()=>this.attack('hoppa')},
+      {label:'🗣 Skälla',cls:'at',fn:()=>this.attack('skälla')},
+      {label:'🦷 Bita',  cls:'at',fn:()=>this.attack('bita')},
+    ]);
+  },
+  attack(type){
+    if(this.phase!=='fighting') return;
+    this.phase='resolving';
+    const win=this.enemy.good.includes(type);
+    const el=document.getElementById('enemy3');
+    el.classList.remove('near');
+    setTimeout(()=>el.style.display='none',700);
+    if(win){
+      this.wins++; const pts=this.level*10; this.score+=pts;
+      document.getElementById('sc').textContent=this.score;
+      this.flash(`Rätt! +${pts}p 🎉`,true);
+      if(this.wins%2===0){
+        this.level++; document.getElementById('lv').textContent=this.level;
+        this.setSt(`Nivå ${this.level}! Hundarna växer!`);
+      } else {this.setSt('Bra jobbat!');}
+    } else {
+      this.hp=Math.max(0,this.hp-1); this.updHP();
+      this.flash('Fel attack! 💥',false);
+      this.setSt(`${this.enemy.name} vann...`);
+    }
+    if(this.hp<=0){setTimeout(()=>this.gameOver(),1400);}
+    else{setTimeout(()=>this.crossPhase(),1900);}
+  },
+  gameOver(){
+    this.phase='idle';
+    this.setSt(`Game over! Nivå ${this.level} — ${this.score}p`);
+    document.getElementById('cross-label').style.display='none';
+    this.showBtns([{label:'🐕 Ny promenad',fn:()=>this.start()}]);
+  }
+};
+
+initLeaves(); drawScene(0);
+</script>
+</body>
+</html>
