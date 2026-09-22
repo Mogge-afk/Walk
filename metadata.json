@@ -1,0 +1,8 @@
+{
+  "name": "Hundpromenaden",
+  "description": "An interactive dog walk adventure game where you navigate forest paths and encounters.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
