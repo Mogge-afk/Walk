@@ -6,29 +6,228 @@
 <title>Hundpromenaden</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0d1a0b; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: system-ui, sans-serif; }
-#gw { width: 380px; border-radius: 12px; overflow: hidden; user-select: none; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
-#sc2 { position: relative; height: 270px; overflow: hidden; background: #1a2e18; }
-canvas#bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-#dogs-wrap { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
-#enemy3 { position: absolute; font-size: 40px; top: 60px; left: 50%; transform: translateX(-50%) scale(0.3); display: none; transition: top 1s ease, transform 1s ease; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
-#enemy3.near { top: 110px; transform: translateX(-50%) scale(1); }
-#flash3 { position: absolute; top: 42%; left: 50%; transform: translate(-50%,-50%); font-size: 19px; font-weight: 500; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.9); display: none; white-space: nowrap; pointer-events: none; }
-#lv-b { position: absolute; top: 9px; left: 11px; background: rgba(0,0,0,0.5); color: #c8ddb0; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
-#sc-b { position: absolute; top: 9px; right: 11px; background: rgba(0,0,0,0.5); color: #c8ddb0; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
-#cross-label { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.55); color: #d4efc4; font-size: 11px; padding: 2px 10px; border-radius: 12px; display: none; white-space: nowrap; }
-#ui3 { padding: 11px 13px; background: #111e0f; }
-#st3 { font-size: 13px; color: #b8d8a0; text-align: center; margin-bottom: 9px; min-height: 17px; }
-#hp3 { display: flex; justify-content: center; gap: 5px; margin-bottom: 9px; }
-.pw { font-size: 15px; }
-#bn3 { display: flex; gap: 7px; flex-wrap: wrap; }
-.gb { flex: 1; min-width: 72px; padding: 9px 5px; background: rgba(255,255,255,0.09); border: 0.5px solid rgba(255,255,255,0.20); border-radius: 8px; color: #dff0d0; font-size: 12px; cursor: pointer; text-align: center; transition: background 0.12s, transform 0.1s; }
-.gb:hover { background: rgba(255,255,255,0.18); }
+body {
+  background: #0a1409;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #e5f2d6;
+}
+#gw {
+  width: 390px;
+  border-radius: 14px;
+  overflow: hidden;
+  user-select: none;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
+  background: #0f1c0d;
+}
+#sc2 {
+  position: relative;
+  height: 270px;
+  overflow: hidden;
+  background: #11200f;
+}
+canvas#bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#dogs-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  transform-origin: bottom center;
+  transition: transform 0.08s ease-out;
+  pointer-events: none;
+  z-index: 10;
+}
+#enemy3 {
+  position: absolute;
+  font-size: 42px;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.3);
+  display: none;
+  transition: top 0.85s cubic-bezier(0.18, 0.89, 0.32, 1.2), transform 0.85s cubic-bezier(0.18, 0.89, 0.32, 1.2);
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.7));
+  z-index: 5;
+}
+#enemy3.near {
+  top: 112px;
+  transform: translateX(-50%) scale(1.15);
+}
+#flash3 {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.95);
+  display: none;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 25;
+  background: rgba(0,0,0,0.72);
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  animation: flashPop 0.2s ease-out;
+}
+@keyframes flashPop {
+  0% { transform: translate(-50%,-50%) scale(0.85); opacity: 0; }
+  100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+}
+
+/* Skoglig HUD */
+.hud-chip {
+  position: absolute;
+  background: rgba(8,18,8,0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #d8efbe;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  z-index: 15;
+  letter-spacing: 0.3px;
+}
+#lv-b { top: 9px; left: 10px; }
+#pace-b {
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #c9f59f;
+  text-transform: uppercase;
+}
+#sc-b { top: 9px; right: 46px; }
+#snd-b {
+  top: 9px;
+  right: 10px;
+  cursor: pointer;
+  padding: 3px 7px;
+  font-size: 12px;
+  transition: background 0.15s, transform 0.1s;
+}
+#snd-b:hover { background: rgba(255,255,255,0.2); }
+#snd-b:active { transform: scale(0.92); }
+
+#cross-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(14,28,12,0.88);
+  border: 1px solid #78c040;
+  color: #e2ffd0;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 12px;
+  display: none;
+  white-space: nowrap;
+  z-index: 15;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+}
+
+/* Gränssnitt */
+#ui3 {
+  padding: 12px 14px 14px;
+  background: #0f1c0d;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+#hp3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+.pw {
+  font-size: 16px;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+  transition: opacity 0.25s, transform 0.25s;
+}
+#st3 {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #b8dca2;
+  text-align: center;
+  margin-bottom: 10px;
+  min-height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+#st3 .stance-hint {
+  color: #ffe680;
+  font-style: italic;
+  font-size: 11px;
+  margin-top: 2px;
+}
+#bn3 {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gb {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 9px;
+  color: #e2f4d4;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.gb:hover {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.3);
+}
 .gb:active { transform: scale(0.96); }
-.gb.at { background: rgba(200,55,35,0.26); border-color: rgba(220,75,55,0.48); }
-.gb.at:hover { background: rgba(200,55,35,0.42); }
-.gb.pt { background: rgba(50,120,50,0.26); border-color: rgba(70,170,70,0.42); }
-.gb.pt:hover { background: rgba(50,120,50,0.42); }
+.gb.at {
+  background: rgba(200,55,35,0.28);
+  border-color: rgba(230,85,60,0.55);
+  color: #ffded8;
+}
+.gb.at:hover { background: rgba(215,65,45,0.45); }
+.gb.pt {
+  background: rgba(45,120,45,0.32);
+  border-color: rgba(75,185,75,0.55);
+  color: #e5ffd5;
+}
+.gb.pt:hover { background: rgba(55,145,55,0.48); }
+.gb.steer {
+  background: rgba(55,95,45,0.4);
+  border-color: rgba(90,165,75,0.5);
+  color: #d6f2c4;
+  font-size: 11px;
+}
+.gb.steer:hover { background: rgba(70,120,55,0.55); }
+.gb.primary {
+  background: #3b7e28;
+  border-color: #5bb240;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(59,126,40,0.4);
+}
+.gb.primary:hover { background: #479632; }
 </style>
 </head>
 <body>
@@ -37,315 +236,910 @@ canvas#bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
   <canvas id="bg" width="380" height="270"></canvas>
   <div id="dogs-wrap">
     <svg id="dogs-svg2" width="150" height="115" viewBox="0 0 150 115" xmlns="http://www.w3.org/2000/svg">
-      <line x1="8" y1="115" x2="44" y2="58" stroke="#8a7060" stroke-width="2" opacity="0.8"/>
-      <line x1="142" y1="115" x2="106" y2="58" stroke="#8a7060" stroke-width="2" opacity="0.8"/>
+      <line id="leashL" x1="8" y1="115" x2="44" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
+      <line id="leashR" x1="142" y1="115" x2="106" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
       <g id="dL">
         <ellipse cx="44" cy="78" rx="23" ry="15" fill="#3a3a3a"/>
         <ellipse cx="33" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
         <ellipse cx="55" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
         <ellipse cx="44" cy="87" rx="11" ry="8" fill="#484848"/>
-        <rect x="27" y="87" width="7" height="17" rx="3" fill="#2a2a2a"/>
-        <rect x="37" y="88" width="7" height="16" rx="3" fill="#333"/>
-        <rect x="47" y="88" width="7" height="16" rx="3" fill="#2a2a2a"/>
-        <rect x="57" y="87" width="7" height="17" rx="3" fill="#333"/>
-        <path d="M21 73 Q8 62 12 51" stroke="#484848" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <rect id="legL1" x="27" y="87" width="7" height="17" rx="3" fill="#2a2a2a"/>
+        <rect id="legL2" x="37" y="88" width="7" height="16" rx="3" fill="#333"/>
+        <rect id="legL3" x="47" y="88" width="7" height="16" rx="3" fill="#2a2a2a"/>
+        <rect id="legL4" x="57" y="87" width="7" height="17" rx="3" fill="#333"/>
+        <path id="tailL" d="M21 73 Q8 62 12 51" stroke="#484848" stroke-width="7" fill="none" stroke-linecap="round"/>
         <ellipse cx="44" cy="60" rx="17" ry="15" fill="#2d2d2d"/>
         <ellipse cx="29" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(-13 29 56)"/>
         <ellipse cx="59" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(13 59 56)"/>
         <ellipse cx="42" cy="62" rx="9" ry="8" fill="#888" opacity="0.35"/>
-        <rect x="32" y="68" width="24" height="4" rx="2" fill="#c03030"/>
+        <rect x="32" y="68" width="24" height="4" rx="2" fill="#d23232"/>
       </g>
       <g id="dR">
         <ellipse cx="106" cy="78" rx="23" ry="15" fill="#6b3d1e"/>
         <ellipse cx="95" cy="82" rx="9" ry="11" fill="#5a3018"/>
         <ellipse cx="117" cy="82" rx="9" ry="11" fill="#5a3018"/>
         <ellipse cx="106" cy="87" rx="11" ry="8" fill="#7a4828"/>
-        <rect x="89" y="87" width="7" height="17" rx="3" fill="#5a3018"/>
-        <rect x="99" y="88" width="7" height="16" rx="3" fill="#6b3d1e"/>
-        <rect x="109" y="88" width="7" height="16" rx="3" fill="#5a3018"/>
-        <rect x="119" y="87" width="7" height="17" rx="3" fill="#6b3d1e"/>
-        <path d="M129 73 Q142 62 138 51" stroke="#7a4828" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <rect id="legR1" x="89" y="87" width="7" height="17" rx="3" fill="#5a3018"/>
+        <rect id="legR2" x="99" y="88" width="7" height="16" rx="3" fill="#6b3d1e"/>
+        <rect id="legR3" x="109" y="88" width="7" height="16" rx="3" fill="#5a3018"/>
+        <rect id="legR4" x="119" y="87" width="7" height="17" rx="3" fill="#6b3d1e"/>
+        <path id="tailR" d="M129 73 Q142 62 138 51" stroke="#7a4828" stroke-width="7" fill="none" stroke-linecap="round"/>
         <path d="M136 55 Q142 50 139 45" stroke="#d4c8a8" stroke-width="5" fill="none" stroke-linecap="round"/>
         <ellipse cx="106" cy="60" rx="17" ry="15" fill="#6b3d1e"/>
         <ellipse cx="91" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(-13 91 56)"/>
         <ellipse cx="121" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(13 121 56)"/>
         <ellipse cx="104" cy="62" rx="9" ry="8" fill="#c8a46e" opacity="0.3"/>
-        <rect x="94" y="68" width="24" height="4" rx="2" fill="#2060a0"/>
+        <rect x="94" y="68" width="24" height="4" rx="2" fill="#256cb5"/>
       </g>
     </svg>
   </div>
   <div id="enemy3"></div>
   <div id="flash3"></div>
-  <div id="lv-b">Nivå <span id="lv">1</span></div>
-  <div id="sc-b">⭐ <span id="sc">0</span></div>
+  <div id="lv-b" class="hud-chip">Nivå <span id="lv">1</span></div>
+  <div id="pace-b" class="hud-chip">🌲 <span id="pace">LUNK</span></div>
+  <div id="sc-b" class="hud-chip">⭐ <span id="sc">0</span></div>
+  <div id="snd-b" class="hud-chip" onclick="SFX.toggle()" title="Ljud av/på">🔊</div>
   <div id="cross-label"></div>
 </div>
 <div id="ui3">
-  <div id="hp3"><span class="pw" id="w1">🐾</span><span class="pw" id="w2">🐾</span><span class="pw" id="w3">🐾</span></div>
-  <div id="st3">Redo att ge sig ut?</div>
-  <div id="bn3"><div class="gb" onclick="G.start()">🐕 Börja promenaden</div></div>
+  <div id="hp3">
+    <span class="pw" id="w1">🐾</span>
+    <span class="pw" id="w2">🐾</span>
+    <span class="pw" id="w3">🐾</span>
+  </div>
+  <div id="st3">Redo för en promenad i skogen?</div>
+  <div id="bn3">
+    <div class="gb primary" onclick="G.start()">🐕 Börja promenaden</div>
+  </div>
 </div>
 </div>
 
 <script>
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
+// =============================================================================
+// Hundpromenaden - Skogsstig Edition med Top Gear Svängmekanik
+// =============================================================================
 
-const TREES_L = [
-  {x:15,h:72,tw:24,c:'#1a3a0a'},{x:48,h:80,tw:22,c:'#224a10'},
-  {x:80,h:65,tw:20,c:'#1e4210'},{x:112,h:75,tw:19,c:'#254d14'},
-  {x:138,h:60,tw:17,c:'#1a3a0a'}
-];
-const TREES_R = [
-  {x:242,h:70,tw:22,c:'#254d14'},{x:274,h:82,tw:24,c:'#1e4210'},
-  {x:308,h:68,tw:21,c:'#224a10'},{x:340,h:76,tw:20,c:'#1a3a0a'},
-  {x:366,h:62,tw:18,c:'#254d14'}
-];
+// Web Audio API Retro Ljudsyntes
+const SFX = {
+  ctx: null,
+  enabled: true,
+  lastPatter: 0,
 
-const CROSSINGS = [
-  {name:'T-korsning',      dirs:['⬅ Vänster','➡ Höger'],             pt:1},
-  {name:'Trevägskorsning', dirs:['⬅ Vänster','⬆ Rakt','➡ Höger'],    pt:2},
-  {name:'Kurva vänster',   dirs:['⬅ Sväng','⬆ Fortsätt rakt'],        pt:3},
-  {name:'Kurva höger',     dirs:['⬆ Fortsätt rakt','➡ Sväng'],        pt:4},
-  {name:'Gaffelkorsning',  dirs:['↖ Bergssidan','↗ Sjösidan'],        pt:2},
-  {name:'Bro eller omväg', dirs:['⬆ Bro','↙ Skog'],                   pt:0},
-];
-
-const ENEMIES = [
-  {icon:'🦊',name:'räv',      lv:1,good:['skälla','bita'], hint:'Rävar skyr högt ljud!'},
-  {icon:'🐦',name:'korp',     lv:1,good:['hoppa','skälla'],hint:'Fåglar hatar stora rörelser!'},
-  {icon:'🦔',name:'igelkott', lv:2,good:['hoppa'],         hint:'Taggar gör ont att bita!'},
-  {icon:'🦌',name:'rådjur',   lv:2,good:['skälla','bita'], hint:'Rådjur skräms av ljud!'},
-  {icon:'🐺',name:'varg',     lv:3,good:['bita'],          hint:'Möt vargen med styrka!'},
-  {icon:'🐗',name:'vildsvin', lv:3,good:['hoppa','skälla'],hint:'Spring inte rakt mot galten!'},
-];
-
-let walkOffset=0, walkAnim=null, dogBob=0, tailWag=0;
-let leafParticles=[];
-
-function initLeaves(){
-  leafParticles=[];
-  for(let i=0;i<16;i++){
-    leafParticles.push({
-      x:20+Math.random()*340, y:140+Math.random()*120,
-      vy:0.2+Math.random()*0.5, vx:-0.2+Math.random()*0.4,
-      size:3+Math.random()*5,
-      color:['#6b4a1e','#8a6030','#7a5528','#5a3a10'][Math.floor(Math.random()*4)],
-      rot:Math.random()*360
-    });
-  }
-}
-
-function drawTrees(list){
-  list.forEach(t=>{
-    ctx.fillStyle='#3a2a1a';
-    ctx.fillRect(t.x-4,106-t.h+28,8,t.h);
-    ctx.fillStyle=t.c;
-    ctx.beginPath();
-    ctx.ellipse(t.x,106-t.h+16,t.tw,t.h*0.55,0,0,Math.PI*2);
-    ctx.fill();
-  });
-}
-
-function drawScene(pt){
-  ctx.clearRect(0,0,380,270);
-  let sky=ctx.createLinearGradient(0,0,0,108);
-  sky.addColorStop(0,'#9ab880'); sky.addColorStop(1,'#c0d89a');
-  ctx.fillStyle=sky; ctx.fillRect(0,0,380,108);
-  ctx.save(); ctx.globalAlpha=0.06; ctx.fillStyle='#ffffcc';
-  [[190,0,145,108],[145,0,105,108],[230,0,175,108]].forEach(([x,y,x2,y2])=>{
-    ctx.beginPath(); ctx.moveTo(x-16,y); ctx.lineTo(x+16,y);
-    ctx.lineTo(x2+28,y2); ctx.lineTo(x2-28,y2); ctx.fill();
-  });
-  ctx.restore();
-  ctx.fillStyle='#3d2a1a'; ctx.fillRect(0,108,380,162);
-  ctx.fillStyle='#2d4a1e'; ctx.fillRect(0,60,155,210);
-  drawTrees(TREES_L);
-  ctx.fillStyle='#2d5018'; ctx.beginPath(); ctx.ellipse(70,110,72,13,0,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#2d4a1e'; ctx.fillRect(225,60,155,210);
-  drawTrees(TREES_R);
-  ctx.fillStyle='#264a14'; ctx.beginPath(); ctx.ellipse(310,110,72,13,0,0,Math.PI*2); ctx.fill();
-  drawPath(pt);
-  leafParticles.forEach(l=>{
-    ctx.save(); ctx.translate(l.x,l.y); ctx.rotate(l.rot*Math.PI/180);
-    ctx.fillStyle=l.color; ctx.beginPath();
-    ctx.ellipse(0,0,l.size,l.size*0.45,0,0,Math.PI*2); ctx.fill();
-    ctx.restore();
-  });
-  ctx.save(); ctx.globalAlpha=0.15; ctx.fillStyle='#b0a090';
-  let off=walkOffset%38;
-  for(let i=0;i<7;i++){
-    let yy=142+i*38-off, ww=8+i*9;
-    ctx.beginPath(); ctx.ellipse(190,yy,ww,2.5,0,0,Math.PI*2); ctx.fill();
-  }
-  ctx.restore();
-}
-
-function drawPath(pt){
-  ctx.save();
-  const g=ctx.createLinearGradient(0,108,0,270);
-  g.addColorStop(0,'#7a6050'); g.addColorStop(1,'#6a5040');
-  ctx.fillStyle=g;
-  if(pt===0){
-    ctx.beginPath(); ctx.moveTo(162,108); ctx.lineTo(218,108); ctx.lineTo(340,270); ctx.lineTo(40,270); ctx.fill();
-    [[188,162,9,4],[194,206,13,5],[180,243,10,4]].forEach(([x,y,rx,ry])=>{
-      ctx.fillStyle='#9a8878'; ctx.beginPath(); ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2); ctx.fill();
-    });
-    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([8,14]);
-    ctx.beginPath(); ctx.moveTo(190,116); ctx.lineTo(190,268); ctx.stroke();
-    ctx.setLineDash([]);
-  } else if(pt===1){
-    ctx.beginPath(); ctx.moveTo(165,108); ctx.lineTo(215,108); ctx.lineTo(310,240); ctx.lineTo(70,240); ctx.fill();
-    ctx.fillStyle='#6a5040'; ctx.fillRect(0,220,145,50); ctx.fillRect(235,220,145,50);
-    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([6,12]);
-    ctx.beginPath(); ctx.moveTo(190,116); ctx.lineTo(190,235); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0,245); ctx.lineTo(380,245); ctx.stroke();
-    ctx.setLineDash([]);
-    lbl('T-korsning',190,226);
-  } else if(pt===2){
-    ctx.beginPath(); ctx.moveTo(168,108); ctx.lineTo(212,108); ctx.lineTo(240,200); ctx.lineTo(140,200); ctx.fill();
-    ctx.fillStyle='#6a5040';
-    ctx.beginPath(); ctx.moveTo(40,270); ctx.lineTo(145,200); ctx.lineTo(195,200); ctx.lineTo(100,270); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(280,270); ctx.lineTo(185,200); ctx.lineTo(235,200); ctx.lineTo(340,270); ctx.fill();
-    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([6,12]);
-    ctx.beginPath(); ctx.moveTo(190,116); ctx.lineTo(190,200); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(190,200); ctx.lineTo(70,268); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(190,200); ctx.lineTo(310,268); ctx.stroke();
-    ctx.setLineDash([]);
-    lbl('Gaffelkorsning',190,190);
-  } else if(pt===3){
-    ctx.beginPath(); ctx.moveTo(165,108); ctx.lineTo(215,108); ctx.lineTo(130,270); ctx.lineTo(70,270); ctx.fill();
-    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([7,13]);
-    ctx.beginPath(); ctx.moveTo(190,116); ctx.quadraticCurveTo(185,200,100,268); ctx.stroke();
-    ctx.setLineDash([]);
-    lbl('Kurva vänster',190,228);
-  } else {
-    ctx.beginPath(); ctx.moveTo(165,108); ctx.lineTo(215,108); ctx.lineTo(310,270); ctx.lineTo(250,270); ctx.fill();
-    ctx.strokeStyle='#a09080'; ctx.lineWidth=1; ctx.setLineDash([7,13]);
-    ctx.beginPath(); ctx.moveTo(190,116); ctx.quadraticCurveTo(195,200,280,268); ctx.stroke();
-    ctx.setLineDash([]);
-    lbl('Kurva höger',190,228);
-  }
-  ctx.restore();
-}
-
-function lbl(txt,x,y){
-  ctx.fillStyle='rgba(0,0,0,0.42)';
-  ctx.beginPath(); ctx.roundRect(x-40,y-14,80,20,4); ctx.fill();
-  ctx.fillStyle='#d4efc4'; ctx.font='10px system-ui'; ctx.textAlign='center';
-  ctx.fillText(txt,x,y);
-}
-
-function animateWalk(){
-  walkOffset+=1.3;
-  leafParticles.forEach(l=>{
-    l.y+=l.vy; l.x+=l.vx; l.rot+=0.4;
-    if(l.y>278){l.y=135; l.x=20+Math.random()*340;}
-  });
-  drawScene(G.curPath);
-  dogBob+=0.11;
-  const dw=document.getElementById('dogs-wrap');
-  const bobY=Math.sin(dogBob)*2.5;
-  const sc=1+(G.level-1)*0.10;
-  dw.style.transform=`translateX(-50%) translateY(${bobY}px) scale(${Math.min(sc,1.5)})`;
-  tailWag+=0.22;
-  const p0=document.querySelector('#dL path');
-  const p1=document.querySelector('#dR path');
-  if(p0) p0.setAttribute('d',`M21 73 Q${8+Math.sin(tailWag)*5} ${62+Math.cos(tailWag)*3} 12 51`);
-  if(p1) p1.setAttribute('d',`M129 73 Q${142+Math.sin(tailWag)*5} ${62+Math.cos(tailWag)*3} 138 51`);
-  walkAnim=requestAnimationFrame(animateWalk);
-}
-
-const G={
-  hp:3,score:0,level:1,wins:0,phase:'idle',enemy:null,curPath:0,
-  rnd(a){return a[Math.floor(Math.random()*a.length)];},
-  setSt(t){document.getElementById('st3').textContent=t;},
-  updHP(){['w1','w2','w3'].forEach((id,i)=>document.getElementById(id).textContent=i<this.hp?'🐾':'💔');},
-  flash(msg,good){
-    const el=document.getElementById('flash3');
-    el.textContent=msg; el.style.color=good?'#90ff90':'#ff9090';
-    el.style.display='block'; setTimeout(()=>el.style.display='none',1300);
-  },
-  showBtns(arr){
-    const c=document.getElementById('bn3'); c.innerHTML='';
-    arr.forEach(b=>{
-      const d=document.createElement('div');
-      d.className='gb '+(b.cls||'');
-      d.textContent=b.label; d.onclick=b.fn; c.appendChild(d);
-    });
-  },
-  start(){
-    this.hp=3;this.score=0;this.level=1;this.wins=0;
-    document.getElementById('lv').textContent=1;
-    document.getElementById('sc').textContent=0;
-    this.updHP(); initLeaves();
-    if(!walkAnim) animateWalk();
-    this.crossPhase();
-  },
-  crossPhase(){
-    this.phase='walking';
-    const cross=this.rnd(CROSSINGS);
-    this.curPath=cross.pt;
-    document.getElementById('cross-label').textContent=cross.name;
-    document.getElementById('cross-label').style.display='block';
-    this.setSt(cross.name+' framför er!');
-    this.showBtns(cross.dirs.map(dir=>({
-      label:dir,cls:'pt',
-      fn:()=>{
-        document.getElementById('cross-label').style.display='none';
-        this.setSt('Ni rör er framåt...');
-        setTimeout(()=>this.spawnEnemy(),1100);
-      }
-    })));
-  },
-  spawnEnemy(){
-    const pool=ENEMIES.filter(e=>e.lv<=Math.min(this.level,3));
-    this.enemy=this.rnd(pool);
-    const el=document.getElementById('enemy3');
-    el.textContent=this.enemy.icon; el.style.display='block'; el.classList.remove('near');
-    setTimeout(()=>el.classList.add('near'),80);
-    setTimeout(()=>{this.setSt(`En ${this.enemy.name}! ${this.enemy.hint}`); this.fightPhase();},1000);
-  },
-  fightPhase(){
-    this.phase='fighting';
-    this.showBtns([
-      {label:'🦘 Hoppa', cls:'at',fn:()=>this.attack('hoppa')},
-      {label:'🗣 Skälla',cls:'at',fn:()=>this.attack('skälla')},
-      {label:'🦷 Bita',  cls:'at',fn:()=>this.attack('bita')},
-    ]);
-  },
-  attack(type){
-    if(this.phase!=='fighting') return;
-    this.phase='resolving';
-    const win=this.enemy.good.includes(type);
-    const el=document.getElementById('enemy3');
-    el.classList.remove('near');
-    setTimeout(()=>el.style.display='none',700);
-    if(win){
-      this.wins++; const pts=this.level*10; this.score+=pts;
-      document.getElementById('sc').textContent=this.score;
-      this.flash(`Rätt! +${pts}p 🎉`,true);
-      if(this.wins%2===0){
-        this.level++; document.getElementById('lv').textContent=this.level;
-        this.setSt(`Nivå ${this.level}! Hundarna växer!`);
-      } else {this.setSt('Bra jobbat!');}
-    } else {
-      this.hp=Math.max(0,this.hp-1); this.updHP();
-      this.flash('Fel attack! 💥',false);
-      this.setSt(`${this.enemy.name} vann...`);
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
     }
-    if(this.hp<=0){setTimeout(()=>this.gameOver(),1400);}
-    else{setTimeout(()=>this.crossPhase(),1900);}
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
   },
-  gameOver(){
-    this.phase='idle';
-    this.setSt(`Game over! Nivå ${this.level} — ${this.score}p`);
-    document.getElementById('cross-label').style.display='none';
-    this.showBtns([{label:'🐕 Ny promenad',fn:()=>this.start()}]);
+
+  toggle() {
+    this.init();
+    this.enabled = !this.enabled;
+    const btn = document.getElementById('snd-b');
+    if (btn) btn.textContent = this.enabled ? '🔊' : '🔇';
+    if (this.enabled) this.tone(523, 0.08, 'triangle', 0.2);
+  },
+
+  tone(freq, dur = 0.1, type = 'square', vol = 0.15, freqEnd = null) {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      if (freqEnd !== null) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(10, freqEnd), this.ctx.currentTime + dur);
+      }
+      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + dur);
+    } catch(e) {}
+  },
+
+  patter() {
+    if (!this.enabled) return;
+    const now = performance.now();
+    if (now - this.lastPatter < 160) return;
+    this.lastPatter = now;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      // Mjukt tassande på mjuk skogsjord och löv
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(90 + Math.random() * 20, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.065, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.05);
+    } catch(e) {}
+  },
+
+  swerve(pitchMod = 1) {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      // Löv- och vindsus när stigen kröker sig
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.32));
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(520 * pitchMod, this.ctx.currentTime);
+      filter.Q.value = 2.0;
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      noise.start();
+    } catch(e) {}
+  },
+
+  bark() {
+    this.tone(360, 0.08, 'sawtooth', 0.22, 160);
+    setTimeout(() => this.tone(440, 0.12, 'sawtooth', 0.24, 180), 80);
+  },
+
+  jump() {
+    this.tone(210, 0.18, 'sine', 0.22, 780);
+    setTimeout(() => this.tone(700, 0.08, 'triangle', 0.15, 420), 120);
+  },
+
+  bite() {
+    this.tone(520, 0.05, 'square', 0.2, 140);
+    setTimeout(() => this.tone(190, 0.08, 'triangle', 0.24, 60), 30);
+  },
+
+  encounter() {
+    this.tone(440, 0.08, 'square', 0.18);
+    setTimeout(() => this.tone(880, 0.16, 'square', 0.22), 80);
+    setTimeout(() => this.tone(660, 0.22, 'sawtooth', 0.16), 180);
+  },
+
+  victory() {
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+      setTimeout(() => this.tone(freq, 0.12, 'triangle', 0.2), idx * 65);
+    });
+  },
+
+  hurt() {
+    this.tone(280, 0.14, 'sawtooth', 0.25, 80);
+    setTimeout(() => this.tone(150, 0.22, 'triangle', 0.2, 50), 100);
+  },
+
+  levelUp() {
+    [440, 554, 659, 880, 1108].forEach((f, i) => {
+      setTimeout(() => this.tone(f, 0.14, 'square', 0.18), i * 75);
+    });
   }
 };
 
-initLeaves(); drawScene(0);
+// =============================================================================
+// Pseudo-3D Skogsstig Renderer (Top Gear Svängar i Skogsmiljö)
+// =============================================================================
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+
+const HORIZON = 104;
+const SCREEN_W = 380;
+const SCREEN_H = 270;
+
+let roadZ = 0;              // Distans längs skogsstigen
+let roadCurve = 0;          // Nuvarande synliga kurva
+let targetCurve = 0;        // Målkurva som stigen böjer mot
+let playerX = 0;            // Hundarnas sidoposition (-1 vänster, 0 mitt, +1 höger)
+let targetPlayerX = 0;      // Styrning
+let horizonShift = 0;       // Bakgrundsrullning
+let paceLevel = 1;          // 1: Lunk, 2: Trav, 3: Galopp
+let dogLean = 0;
+
+// Skogsobjekt längs stigen
+let roadsideObjects = [];
+
+function initRoadsideObjects() {
+  roadsideObjects = [];
+  const types = ['tree', 'birch', 'tree', 'rock', 'stump', 'tree', 'mushroom', 'fern'];
+  for (let i = 0; i < 32; i++) {
+    roadsideObjects.push({
+      z: 40 + i * 36 + Math.random() * 15,
+      side: i % 2 === 0 ? -1 - Math.random() * 0.35 : 1 + Math.random() * 0.35,
+      type: types[i % types.length],
+      scale: 0.85 + Math.random() * 0.35
+    });
+  }
+}
+initRoadsideObjects();
+
+// Skogshorisont med djupa granåsar
+function drawHorizon(shift) {
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, HORIZON);
+  skyGrad.addColorStop(0, '#4a6f43');
+  skyGrad.addColorStop(0.65, '#769b62');
+  skyGrad.addColorStop(1, '#aed18e');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, SCREEN_W, HORIZON);
+
+  // Solstrimmor
+  ctx.save();
+  ctx.globalAlpha = 0.08;
+  ctx.fillStyle = '#ffffe0';
+  [[190,0,150,HORIZON],[130,0,90,HORIZON],[250,0,210,HORIZON]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath();
+    ctx.moveTo(x1-20, y1); ctx.lineTo(x1+20, y1);
+    ctx.lineTo(x2+35, y2); ctx.lineTo(x2-35, y2);
+    ctx.fill();
+  });
+  ctx.restore();
+
+  // Skogsåsar (Parallax nivå 1)
+  ctx.save();
+  ctx.fillStyle = '#2f4a2b';
+  ctx.beginPath();
+  const mOff = ((shift * 0.3) % SCREEN_W) - SCREEN_W;
+  for (let x = mOff; x < SCREEN_W * 2; x += 110) {
+    ctx.moveTo(x, HORIZON);
+    ctx.lineTo(x + 30, HORIZON - 24);
+    ctx.lineTo(x + 65, HORIZON - 16);
+    ctx.lineTo(x + 100, HORIZON - 30);
+    ctx.lineTo(x + 125, HORIZON);
+  }
+  ctx.fill();
+
+  // Grantoppssiluett (Parallax nivå 2)
+  ctx.fillStyle = '#1c3317';
+  ctx.beginPath();
+  const fOff = ((shift * 0.7) % SCREEN_W) - SCREEN_W;
+  for (let x = fOff; x < SCREEN_W * 2; x += 32) {
+    ctx.moveTo(x, HORIZON);
+    ctx.lineTo(x + 10, HORIZON - 15);
+    ctx.lineTo(x + 20, HORIZON - 20);
+    ctx.lineTo(x + 28, HORIZON - 12);
+    ctx.lineTo(x + 32, HORIZON);
+  }
+  ctx.fill();
+  ctx.restore();
+}
+
+// Rendera skogsstigen (Mossa, jord, stenar, trampade spår)
+function renderTrail(curve, camX, distance) {
+  drawHorizon(horizonShift);
+
+  const roadH = SCREEN_H - HORIZON;
+  const stripeFreq = 16;
+
+  for (let y = HORIZON; y < SCREEN_H; y += 2) {
+    const p = (y - HORIZON) / roadH;
+    const pPow = Math.pow(p, 1.75);
+    const z = 1 / (p + 0.001);
+
+    // Top Gear-kurvatur med mjuk perspektivprojektion
+    const curveOffset = curve * Math.pow(p, 2.1) * 165;
+    const steerOffset = -camX * p * 135;
+    const trailCenterX = (SCREEN_W / 2) + curveOffset + steerOffset;
+
+    // Naturlig bredd på skogsstigen
+    const trailWidth = 20 + pPow * 230;
+    const halfW = trailWidth / 2;
+
+    const segment = Math.floor((distance + z * 8) / stripeFreq) % 2;
+
+    // 1. Skogsmark & Mossa på sidorna
+    ctx.fillStyle = (segment === 0) ? '#264218' : '#1c3412';
+    ctx.fillRect(0, y, SCREEN_W, 2);
+
+    // 2. Naturlig mjuk stigkant med mossa och barr
+    const edgeW = 5 + p * 16;
+    ctx.fillStyle = (segment === 0) ? '#385322' : '#2d431a';
+    ctx.fillRect(trailCenterX - halfW - edgeW, y, edgeW, 2);
+    ctx.fillRect(trailCenterX + halfW, y, edgeW, 2);
+
+    // 3. Stigens trampade jordyta
+    ctx.fillStyle = (segment === 0) ? '#5c4533' : '#523c2c';
+    ctx.fillRect(trailCenterX - halfW, y, trailWidth, 2);
+
+    // 4. Slitspår i stigen
+    if (p > 0.1) {
+      const trackW = Math.max(2, p * 8);
+      ctx.fillStyle = (segment === 0) ? '#4a3424' : '#422e1e';
+      ctx.fillRect(trailCenterX - halfW * 0.45 - trackW / 2, y, trackW, 2);
+      ctx.fillRect(trailCenterX + halfW * 0.45 - trackW / 2, y, trackW, 2);
+
+      if (segment === 1 && p > 0.25 && ((Math.floor(y) % 8) === 0)) {
+        ctx.fillStyle = '#826f58';
+        ctx.fillRect(trailCenterX - 2, y, 4, 1.5);
+      }
+    }
+  }
+
+  drawForestScenery(curve, camX, distance);
+}
+
+function drawForestScenery(curve, camX, distance) {
+  const visible = roadsideObjects.map(obj => {
+    let relZ = (obj.z - (distance % 1152) + 1152) % 1152;
+    return { ...obj, relZ };
+  }).filter(obj => obj.relZ > 22 && obj.relZ < 1050);
+
+  visible.sort((a, b) => b.relZ - a.relZ);
+
+  visible.forEach(obj => {
+    const p = Math.min(1.2, 175 / obj.relZ);
+    if (p <= 0.05) return;
+
+    const screenY = HORIZON + p * (SCREEN_H - HORIZON) * 0.88;
+    if (screenY < HORIZON || screenY > SCREEN_H + 40) return;
+
+    const curveOffset = curve * Math.pow(p, 2.1) * 165;
+    const steerOffset = -camX * p * 135;
+    const trailCenterX = (SCREEN_W / 2) + curveOffset + steerOffset;
+    const trailWidth = 20 + Math.pow(p, 1.75) * 230;
+    const halfW = trailWidth / 2;
+
+    const edgeW = 5 + p * 16;
+    const sideMargin = (12 + obj.relZ * 0.02) * p;
+    const screenX = trailCenterX + (obj.side > 0 ? (halfW + edgeW + sideMargin) : -(halfW + edgeW + sideMargin));
+
+    ctx.save();
+    ctx.translate(screenX, screenY);
+    const sz = p * 42 * obj.scale;
+
+    if (obj.type === 'tree') {
+      ctx.fillStyle = '#3a2414';
+      ctx.fillRect(-sz * 0.08, -sz * 0.35, sz * 0.16, sz * 0.35);
+      ctx.fillStyle = '#183610';
+      ctx.beginPath();
+      ctx.moveTo(0, -sz * 1.3);
+      ctx.lineTo(sz * 0.44, -sz * 0.35);
+      ctx.lineTo(-sz * 0.44, -sz * 0.35);
+      ctx.fill();
+      ctx.fillStyle = '#224d18';
+      ctx.beginPath();
+      ctx.moveTo(0, -sz * 1.3);
+      ctx.lineTo(sz * 0.36, -sz * 0.65);
+      ctx.lineTo(-sz * 0.36, -sz * 0.65);
+      ctx.fill();
+    } else if (obj.type === 'birch') {
+      ctx.fillStyle = '#dfd8cc';
+      ctx.fillRect(-sz * 0.07, -sz * 0.5, sz * 0.14, sz * 0.5);
+      ctx.fillStyle = '#294814';
+      ctx.beginPath();
+      ctx.ellipse(0, -sz * 0.8, sz * 0.38, sz * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (obj.type === 'rock') {
+      ctx.fillStyle = '#4c463f';
+      ctx.beginPath();
+      ctx.ellipse(0, -sz * 0.15, sz * 0.35, sz * 0.22, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#596e38';
+      ctx.beginPath();
+      ctx.ellipse(-sz * 0.06, -sz * 0.22, sz * 0.22, sz * 0.11, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (obj.type === 'stump') {
+      ctx.fillStyle = '#48321e';
+      ctx.fillRect(-sz * 0.14, -sz * 0.22, sz * 0.28, sz * 0.22);
+      ctx.fillStyle = '#785b3b';
+      ctx.beginPath();
+      ctx.ellipse(0, -sz * 0.22, sz * 0.14, sz * 0.07, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (obj.type === 'mushroom') {
+      ctx.fillStyle = '#ece5d8';
+      ctx.fillRect(-sz * 0.04, -sz * 0.18, sz * 0.08, sz * 0.18);
+      ctx.fillStyle = '#b83226';
+      ctx.beginPath();
+      ctx.arc(0, -sz * 0.18, sz * 0.12, Math.PI, 0);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = '#2d5c1b';
+      ctx.beginPath();
+      ctx.ellipse(0, -sz * 0.16, sz * 0.3, sz * 0.18, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  });
+}
+
+// =============================================================================
+// Korsningar & Fiendekatalog med Dynamiskt Minne och Roterande Taktik
+// =============================================================================
+const CROSSINGS = [
+  { name: 'T-korsning i tallskogen',  dirs: ['⬅ Vänster stig', '➡ Höger stig'],             targetCurve: -1.05, altCurve: 1.05 },
+  { name: 'Trevägsstig vid forsen',   dirs: ['⬅ Vänster', '⬆ Rakt fram', '➡ Höger'],        targetCurve: -0.8,  altCurve: 0.8 },
+  { name: 'Brant kurva runt krönet',  dirs: ['⬅ Slingrande kurva', '⬆ Genväg över åsen'],   targetCurve: -1.25, altCurve: 0.2 },
+  { name: 'Sjövägen mot viken',       dirs: ['⬆ Mot sjön', '➡ Uppåt berget'],               targetCurve: 0.1,   altCurve: 1.15 },
+  { name: 'Gaffelkorsning i gläntan', dirs: ['↖ Granstigen', '↗ Björkallén'],               targetCurve: -0.7,  altCurve: 0.7 },
+  { name: 'Mossig träbro',            dirs: ['⬆ Över bron', '↙ Genom snåret'],              targetCurve: 0.0,   altCurve: -0.9 },
+];
+
+const ENEMY_CATALOG = [
+  {
+    icon: '🦊',
+    name: 'räv',
+    lv: 1,
+    stances: [
+      {
+        desc: 'Räven smyger lågt i slyet med spetsade öron.',
+        hint: 'Låga smygare skräms av höga rörelser och överraskande skall!',
+        good: ['skälla', 'hoppa'],
+        best: 'skälla',
+        failMsg: 'Räven duckar bakom stubben! Den bryr sig inte om nafset.'
+      },
+      {
+        desc: 'Räven ställer sig bredbent mitt på stigen och visar gaddarna.',
+        hint: 'När räven utmanar måste hundarna visa vem som bestämmer med kraft!',
+        good: ['bita', 'skälla'],
+        best: 'bita',
+        failMsg: 'Att hoppa hjälpte inte, räven stod kvar och blängde!'
+      },
+      {
+        desc: 'Räven gör blixtsnabba sidosteg för att finta hundarna.',
+        hint: 'För snabba språng krävs ett vältajmat mot-hopp eller bett!',
+        good: ['hoppa', 'bita'],
+        best: 'hoppa',
+        failMsg: 'Ett skall hann inte träffa den snabbfotade räven!'
+      }
+    ]
+  },
+  {
+    icon: '🐦',
+    name: 'korp',
+    lv: 1,
+    stances: [
+      {
+        desc: 'Korpen dyker i cirklar rakt mot hundarnas huvuden och kraxar hånfullt.',
+        hint: 'Fåglar i luften kan mötas med ett flygande skutt eller ett skarpt skall!',
+        good: ['hoppa', 'skälla'],
+        best: 'hoppa',
+        failMsg: 'Korpen flyger alldeles för högt för att nå med ett nafs!'
+      },
+      {
+        desc: 'Korpen sitter på en låg tallgren och vägrar flytta på sig.',
+        hint: 'Skall ekar genom trädkronorna och får fågeln att tappa fattningen!',
+        good: ['skälla', 'hoppa'],
+        best: 'skälla',
+        failMsg: 'Grenen är för högt upp för att bita från marken!'
+      },
+      {
+        desc: 'Korpen pickar djärvt i marken bara en halvmeter framför nosarna.',
+        hint: 'Marknära fåglar överrumplas snabbt med ett kraftfullt bett eller hopp!',
+        good: ['bita', 'hoppa'],
+        best: 'bita',
+        failMsg: 'Korpen bryr sig inte om skallet när den har mat i sikte!'
+      }
+    ]
+  },
+  {
+    icon: '🦔',
+    name: 'igelkott',
+    lv: 2,
+    stances: [
+      {
+        desc: 'Igelkotten rullar ihop sig till en stenhård boll av vassa taggar.',
+        hint: 'Rör inte taggarna! Enda säkra sättet är att elegant hoppa över den!',
+        good: ['hoppa'],
+        best: 'hoppa',
+        failMsg: 'Aj aj aj! Taggarna stack rakt in i hundens nos!'
+      },
+      {
+        desc: 'Igelkotten prasslar fram och väser hotfullt med nosen i vädret.',
+        hint: 'Ett högt skall får igelkotten att retirera in i buskaget!',
+        good: ['skälla', 'hoppa'],
+        best: 'skälla',
+        failMsg: 'Att bita en taggig krabat slutar alltid i tårar!'
+      }
+    ]
+  },
+  {
+    icon: '🦌',
+    name: 'rådjur',
+    lv: 2,
+    stances: [
+      {
+        desc: 'Rådjuret fryser blickstilla mitt på stigen med stora stirrande ögon.',
+        hint: 'Rådjur har känslig hörsel och flyr fort vid kraftigt skall!',
+        good: ['skälla', 'hoppa'],
+        best: 'skälla',
+        failMsg: 'Rådjuret står för långt bort för att nå med tänderna!'
+      },
+      {
+        desc: 'Rådjuret spänner sina kraftiga bakben och gör sig redo för en spark.',
+        hint: 'Hoppa undan klövarna i tid för att inte bli träffad!',
+        good: ['hoppa', 'skälla'],
+        best: 'hoppa',
+        failMsg: 'Att springa rakt mot klövarna ledde till en smäll!'
+      }
+    ]
+  },
+  {
+    icon: '🐺',
+    name: 'varg',
+    lv: 3,
+    stances: [
+      {
+        desc: 'Vargen står orubblig med sänkt huvud och morrar djupt i bröstet.',
+        hint: 'Flockledaren backar inte för ljud – bara hårt motstånd med bett!',
+        good: ['bita'],
+        best: 'bita',
+        failMsg: 'Ett enkelt skall skrämmer ingen hungrig varg!'
+      },
+      {
+        desc: 'Vargen försöker snabbt smyga runt på sidan för att flankera er.',
+        hint: 'Ett snabbt mot-hopp blockerar vargens väg och tvingar den bakåt!',
+        good: ['hoppa', 'bita'],
+        best: 'hoppa',
+        failMsg: 'Vargen gled undan och tog kontroll över stigen!'
+      },
+      {
+        desc: 'Vargen reser ragg och ställer sig i full motståndsposition.',
+        hint: 'Då krävs det att båda hundarna skäller i kör eller biter till!',
+        good: ['skälla', 'bita'],
+        best: 'skälla',
+        failMsg: 'Ett hopp i luften lämnade magen helt oskyddad!'
+      }
+    ]
+  },
+  {
+    icon: '🐗',
+    name: 'vildsvin',
+    lv: 3,
+    stances: [
+      {
+        desc: 'Ett dundrande vildsvin sänker trynet och rusar rakt mot er i full fart!',
+        hint: 'Stå inte i vägen för galtens betar! Hoppa åt sidan i sista sekunden!',
+        good: ['hoppa'],
+        best: 'hoppa',
+        failMsg: 'Att bita mot en dundrande galt gör bara ont!'
+      },
+      {
+        desc: 'Vildsvinet bökar ilsket och kastar upp jord och rötter över stigen.',
+        hint: 'Överraska galten med ett massivt skall innan den hinner ladda!',
+        good: ['skälla', 'hoppa'],
+        best: 'skälla',
+        failMsg: 'Trynet är pansarhårt – tänderna gled bara av borsten!'
+      }
+    ]
+  }
+];
+
+const EnemyMemory = {};
+
+function getRotatedEnemy(level) {
+  const pool = ENEMY_CATALOG.filter(e => e.lv <= level);
+  const template = pool[Math.floor(Math.random() * pool.length)];
+
+  if (!EnemyMemory[template.name]) {
+    EnemyMemory[template.name] = {
+      encounters: 0,
+      lastStanceIndex: -1,
+      lastActionUsed: null
+    };
+  }
+  const mem = EnemyMemory[template.name];
+  mem.encounters++;
+
+  const stanceIdx = (mem.lastStanceIndex + 1) % template.stances.length;
+  mem.lastStanceIndex = stanceIdx;
+  const currentStance = template.stances[stanceIdx];
+
+  return {
+    icon: template.icon,
+    name: template.name,
+    lv: template.lv,
+    stance: currentStance,
+    encounters: mem.encounters,
+    lastActionUsed: mem.lastActionUsed
+  };
+}
+
+// =============================================================================
+// Spelmotor
+// =============================================================================
+const PACE_NAMES = {
+  1: 'Lugn lunk',
+  2: 'Pigg trav',
+  3: 'Full galopp'
+};
+
+const G = {
+  hp: 3,
+  sc: 0,
+  lv: 1,
+  en: null,
+  walking: false,
+  walkTimer: null,
+  stepCount: 0,
+
+  start() {
+    SFX.init();
+    SFX.victory();
+    this.hp = 3;
+    this.sc = 0;
+    this.lv = 1;
+    paceLevel = 1;
+    targetCurve = 0;
+    roadCurve = 0;
+    playerX = 0;
+    targetPlayerX = 0;
+    this.updateUI();
+    this.walk();
+  },
+
+  updateUI() {
+    document.getElementById('lv').textContent = this.lv;
+    document.getElementById('sc').textContent = this.sc;
+    document.getElementById('pace').textContent = PACE_NAMES[paceLevel] || 'Trav';
+
+    for (let i = 1; i <= 3; i++) {
+      const p = document.getElementById('w' + i);
+      if (p) {
+        p.style.opacity = (i <= this.hp) ? '1' : '0.2';
+        p.style.transform = (i <= this.hp) ? 'scale(1)' : 'scale(0.8)';
+      }
+    }
+  },
+
+  flash(txt, col = '#fff') {
+    const f = document.getElementById('flash3');
+    f.textContent = txt;
+    f.style.color = col;
+    f.style.display = 'block';
+    clearTimeout(this._ft);
+    this._ft = setTimeout(() => { f.style.display = 'none'; }, 1600);
+  },
+
+  setStatus(html) {
+    document.getElementById('st3').innerHTML = html;
+  },
+
+  setBtns(list) {
+    const b = document.getElementById('bn3');
+    b.innerHTML = '';
+    list.forEach(item => {
+      const d = document.createElement('div');
+      d.className = 'gb ' + (item.cls || '');
+      d.textContent = item.t;
+      d.onclick = () => {
+        SFX.init();
+        if (item.fn) item.fn();
+      };
+      b.appendChild(d);
+    });
+  },
+
+  steer(dir) {
+    targetPlayerX = Math.max(-0.85, Math.min(0.85, targetPlayerX + dir * 0.45));
+    dogLean = targetPlayerX * 16;
+    SFX.swerve(dir < 0 ? 0.9 : 1.15);
+  },
+
+  walk(forcedCurve = null) {
+    if (this.walkTimer) clearInterval(this.walkTimer);
+    this.walking = true;
+    document.getElementById('cross-label').style.display = 'none';
+    const enemyEl = document.getElementById('enemy3');
+    enemyEl.style.display = 'none';
+    enemyEl.className = '';
+
+    if (forcedCurve !== null) {
+      targetCurve = forcedCurve;
+    } else {
+      const curves = [0, -0.7, 0.75, -1.1, 0.95, 0];
+      targetCurve = curves[Math.floor(Math.random() * curves.length)];
+    }
+
+    if (Math.abs(targetCurve) > 0.4) {
+      SFX.swerve(1.15);
+    }
+
+    paceLevel = Math.min(3, Math.max(1, this.lv));
+    this.updateUI();
+
+    const curveDesc = targetCurve < -0.3 ? 'Stigen svänger skarpt åt vänster!' :
+                      targetCurve > 0.3 ? 'Stigen kröker sig åt höger!' :
+                      'Stigen slingrar sig framåt genom skogen.';
+
+    this.setStatus(`Hundarna travar längs stigen. ${curveDesc}`);
+
+    this.setBtns([
+      { t: '◀ Sväng vänster', cls: 'steer', fn: () => this.steer(-1) },
+      { t: '🐾 Håll spåret', cls: '', fn: () => { targetPlayerX = 0; SFX.patter(); } },
+      { t: 'Sväng höger ▶', cls: 'steer', fn: () => this.steer(1) }
+    ]);
+
+    this.stepCount = 0;
+    const speed = 12 + paceLevel * 4;
+
+    this.walkTimer = setInterval(() => {
+      this.stepCount++;
+      roadZ += speed;
+
+      roadCurve += (targetCurve - roadCurve) * 0.12;
+      playerX += (targetPlayerX - playerX) * 0.14;
+      horizonShift += (targetCurve * 2.6 - playerX * 1.4);
+
+      const dogBob = Math.sin(roadZ * 0.22) * 3.5;
+      dogLean += ((playerX * 14) - dogLean) * 0.2;
+      const dogsWrap = document.getElementById('dogs-wrap');
+      const pixelOffset = playerX * 80;
+      dogsWrap.style.transform = `translateX(calc(-50% + ${pixelOffset}px)) translateY(${dogBob}px) rotate(${dogLean}deg)`;
+
+      const trot = Math.sin(roadZ * 0.25);
+      const legL1 = document.getElementById('legL1');
+      const legR1 = document.getElementById('legR1');
+      if (legL1 && legR1) {
+        legL1.setAttribute('y', 87 + trot * 2);
+        legR1.setAttribute('y', 87 - trot * 2);
+      }
+
+      if (this.stepCount % 5 === 0) {
+        SFX.patter();
+      }
+
+      renderTrail(roadCurve, playerX, roadZ);
+
+      if (this.stepCount > 34) {
+        clearInterval(this.walkTimer);
+        this.walkTimer = null;
+        this.walking = false;
+        this.sc += 15;
+        this.updateUI();
+
+        if (Math.random() < 0.45) {
+          this.triggerCross();
+        } else {
+          this.triggerEnemy();
+        }
+      }
+    }, 45);
+  },
+
+  triggerCross() {
+    const cr = CROSSINGS[Math.floor(Math.random() * CROSSINGS.length)];
+    const cl = document.getElementById('cross-label');
+    cl.textContent = '🔀 ' + cr.name;
+    cl.style.display = 'block';
+
+    targetCurve = cr.targetCurve;
+    roadCurve = cr.targetCurve * 0.7;
+    renderTrail(roadCurve, playerX, roadZ);
+    SFX.swerve(1.2);
+
+    this.setStatus(`En <strong>${cr.name}</strong> dyker upp! Vart vill ni styra hundarna?`);
+
+    const btns = cr.dirs.map((d, idx) => ({
+      t: d,
+      cls: 'pt',
+      fn: () => {
+        const chosenCurve = (idx === 0) ? cr.targetCurve : (idx === cr.dirs.length - 1 ? cr.altCurve : 0);
+        targetPlayerX = chosenCurve > 0 ? 0.45 : (chosenCurve < 0 ? -0.45 : 0);
+        this.flash(d.replace(/^[⬅➡⬆↖↗↙]\s*/, '') + '!', '#b4f59c');
+        SFX.swerve(1.4);
+        this.walk(chosenCurve);
+      }
+    }));
+
+    this.setBtns(btns);
+  },
+
+  triggerEnemy() {
+    const enemyData = getRotatedEnemy(this.lv);
+    this.en = enemyData;
+
+    const ed = document.getElementById('enemy3');
+    ed.textContent = enemyData.icon;
+    ed.style.display = 'block';
+    ed.className = '';
+    setTimeout(() => { ed.className = 'near'; }, 40);
+
+    SFX.encounter();
+
+    let memoryNotice = '';
+    if (enemyData.encounters > 1) {
+      memoryNotice = `<span class="stance-hint">Hundarna känner igen denna ${enemyData.name}! Den har bytt taktik sedan sist.</span>`;
+    }
+
+    this.setStatus(`
+      En <strong>${enemyData.name}</strong> spärrar stigen!<br>
+      "${enemyData.stance.desc}"
+      ${memoryNotice}
+    `);
+
+    this.flash(`En ${enemyData.name}!`, '#ffaa44');
+
+    this.setBtns([
+      { t: '🗣️ Skälla', cls: 'at', fn: () => this.act('skälla') },
+      { t: '🦘 Hoppa', cls: 'at', fn: () => this.act('hoppa') },
+      { t: '🦷 Bita', cls: 'at', fn: () => this.act('bita') }
+    ]);
+  },
+
+  act(action) {
+    const en = this.en;
+    if (!en) return;
+
+    if (action === 'skälla') SFX.bark();
+    else if (action === 'hoppa') SFX.jump();
+    else if (action === 'bita') SFX.bite();
+
+    const ok = en.stance.good.includes(action);
+
+    if (ok) {
+      if (EnemyMemory[en.name]) {
+        EnemyMemory[en.name].lastActionUsed = action;
+      }
+
+      this.sc += 35;
+      if (this.sc >= this.lv * 70) {
+        this.lv++;
+        SFX.levelUp();
+        this.flash('Nivå upp! ⭐ Hundarna ökar farten!', '#aaff88');
+      } else {
+        SFX.victory();
+        this.flash(`${en.icon} sprang iväg! +35p`, '#88ff88');
+      }
+      this.updateUI();
+
+      this.setStatus(`
+        <strong>Perfekt drag!</strong> ${en.stance.hint}
+        <span class="stance-hint">${en.name.charAt(0).toUpperCase() + en.name.slice(1)}n vek undan och stigen är fri!</span>
+      `);
+
+      document.getElementById('enemy3').style.display = 'none';
+      setTimeout(() => this.walk(), 1400);
+    } else {
+      this.hp--;
+      SFX.hurt();
+      this.updateUI();
+      this.flash('Aj! Det fungerade inte... -1🐾', '#ff6666');
+
+      if (this.hp <= 0) {
+        this.gameOver();
+      } else {
+        this.setStatus(`
+          <strong>${en.stance.failMsg}</strong><br>
+          <span class="stance-hint">Ledtråd: ${en.stance.hint}</span>
+        `);
+      }
+    }
+  },
+
+  gameOver() {
+    this.setStatus('Promenaden tog slut! Hundarna är för trötta för att fortsätta.');
+    this.flash('Spel över 🐾', '#ff4444');
+    document.getElementById('enemy3').style.display = 'none';
+    this.setBtns([{ t: '🔄 Gå ut igen', cls: 'primary', fn: () => this.start() }]);
+  }
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+    if (G.walking) G.steer(-1);
+  } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+    if (G.walking) G.steer(1);
+  }
+});
+
+// Startritning
+renderTrail(0, 0, 0);
 </script>
 </body>
 </html>
