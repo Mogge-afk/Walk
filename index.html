@@ -5,1141 +5,639 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hundpromenaden</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: #0a1409;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #e5f2d6;
-}
-#gw {
-  width: 390px;
-  border-radius: 14px;
-  overflow: hidden;
-  user-select: none;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
-  background: #0f1c0d;
-}
-#sc2 {
-  position: relative;
-  height: 270px;
-  overflow: hidden;
-  background: #11200f;
-}
-canvas#bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-#dogs-wrap {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  transform-origin: bottom center;
-  transition: transform 0.08s ease-out;
-  pointer-events: none;
-  z-index: 10;
-}
-#enemy3 {
-  position: absolute;
-  font-size: 42px;
-  top: 64px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.3);
-  display: none;
-  transition: top 0.85s cubic-bezier(0.18, 0.89, 0.32, 1.2), transform 0.85s cubic-bezier(0.18, 0.89, 0.32, 1.2);
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.7));
-  z-index: 5;
-}
-#enemy3.near {
-  top: 112px;
-  transform: translateX(-50%) scale(1.15);
-}
-#flash3 {
-  position: absolute;
-  top: 38%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.95);
-  display: none;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 25;
-  background: rgba(0,0,0,0.72);
-  padding: 5px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.25);
-  animation: flashPop 0.2s ease-out;
-}
-@keyframes flashPop {
-  0% { transform: translate(-50%,-50%) scale(0.85); opacity: 0; }
-  100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
-}
-
-/* Skoglig HUD */
-.hud-chip {
-  position: absolute;
-  background: rgba(8,18,8,0.8);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: #d8efbe;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  z-index: 15;
-  letter-spacing: 0.3px;
-}
-#lv-b { top: 9px; left: 10px; }
-#pace-b {
-  top: 9px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  color: #c9f59f;
-  text-transform: uppercase;
-}
-#sc-b { top: 9px; right: 46px; }
-#snd-b {
-  top: 9px;
-  right: 10px;
-  cursor: pointer;
-  padding: 3px 7px;
-  font-size: 12px;
-  transition: background 0.15s, transform 0.1s;
-}
-#snd-b:hover { background: rgba(255,255,255,0.2); }
-#snd-b:active { transform: scale(0.92); }
-
-#cross-label {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(14,28,12,0.88);
-  border: 1px solid #78c040;
-  color: #e2ffd0;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 12px;
-  border-radius: 12px;
-  display: none;
-  white-space: nowrap;
-  z-index: 15;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.6);
-}
-
-/* Gränssnitt */
-#ui3 {
-  padding: 12px 14px 14px;
-  background: #0f1c0d;
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-#hp3 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 7px;
-}
-.pw {
-  font-size: 16px;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
-  transition: opacity 0.25s, transform 0.25s;
-}
-#st3 {
-  font-size: 12.5px;
-  line-height: 1.4;
-  color: #b8dca2;
-  text-align: center;
-  margin-bottom: 10px;
-  min-height: 38px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-}
-#st3 .stance-hint {
-  color: #ffe680;
-  font-style: italic;
-  font-size: 11px;
-  margin-top: 2px;
-}
-#bn3 {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.gb {
-  flex: 1;
-  min-width: 80px;
-  padding: 10px 8px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 9px;
-  color: #e2f4d4;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  transition: background 0.15s, transform 0.1s, border-color 0.15s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-.gb:hover {
-  background: rgba(255,255,255,0.16);
-  border-color: rgba(255,255,255,0.3);
-}
-.gb:active { transform: scale(0.96); }
-.gb.at {
-  background: rgba(200,55,35,0.28);
-  border-color: rgba(230,85,60,0.55);
-  color: #ffded8;
-}
-.gb.at:hover { background: rgba(215,65,45,0.45); }
-.gb.pt {
-  background: rgba(45,120,45,0.32);
-  border-color: rgba(75,185,75,0.55);
-  color: #e5ffd5;
-}
-.gb.pt:hover { background: rgba(55,145,55,0.48); }
-.gb.steer {
-  background: rgba(55,95,45,0.4);
-  border-color: rgba(90,165,75,0.5);
-  color: #d6f2c4;
-  font-size: 11px;
-}
-.gb.steer:hover { background: rgba(70,120,55,0.55); }
-.gb.primary {
-  background: #3b7e28;
-  border-color: #5bb240;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(59,126,40,0.4);
-}
-.gb.primary:hover { background: #479632; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a1409;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#e5f2d6;}
+#gw{width:380px;border-radius:14px;overflow:hidden;user-select:none;box-shadow:0 16px 40px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.08);background:#0f1c0d;}
+#sc{position:relative;height:240px;overflow:hidden;background:#11200f;}
+#cv{display:block;}
+#dogs-wrap{position:absolute;bottom:0;left:50%;transform:translateX(-50%);transform-origin:bottom center;transition:transform .08s ease-out;pointer-events:none;z-index:10;}
+#enemy{position:absolute;font-size:40px;top:50px;left:50%;transform:translateX(-50%) scale(0.2);display:none;transition:top .85s cubic-bezier(.18,.89,.32,1.2),transform .85s cubic-bezier(.18,.89,.32,1.2);filter:drop-shadow(0 4px 10px rgba(0,0,0,.7));z-index:5;}
+#enemy.near{top:88px;transform:translateX(-50%) scale(1.1);}
+#flash{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:700;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.95);display:none;white-space:nowrap;pointer-events:none;z-index:25;background:rgba(0,0,0,.72);padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.25);animation:flashPop .2s ease-out;}
+@keyframes flashPop{0%{transform:translate(-50%,-50%) scale(.85);opacity:0;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.hud-chip{position:absolute;background:rgba(8,18,8,.8);border:1px solid rgba(255,255,255,.18);color:#d8efbe;font-size:11px;font-weight:600;padding:3px 9px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.5);z-index:15;letter-spacing:.3px;}
+#lv-b{top:8px;left:10px;}
+#pace-b{top:8px;left:50%;transform:translateX(-50%);font-size:10px;color:#c9f59f;text-transform:uppercase;}
+#sc-b{top:8px;right:38px;}
+#snd-b{top:8px;right:10px;cursor:pointer;padding:3px 7px;font-size:12px;transition:background .15s,transform .1s;}
+#snd-b:hover{background:rgba(255,255,255,.2);}
+#snd-b:active{transform:scale(.92);}
+#biome-label{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);background:rgba(14,28,12,.88);border:1px solid #78c040;color:#e2ffd0;font-size:11px;font-weight:600;padding:3px 12px;border-radius:12px;display:none;white-space:nowrap;z-index:15;box-shadow:0 2px 10px rgba(0,0,0,.6);}
+#ui{padding:12px 14px 14px;background:#0f1c0d;border-top:1px solid rgba(255,255,255,.08);}
+#hp{display:flex;justify-content:center;align-items:center;gap:6px;margin-bottom:7px;}
+.pw{font-size:16px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));transition:opacity .25s,transform .25s;}
+#st{font-size:12.5px;line-height:1.4;color:#b8dca2;text-align:center;margin-bottom:10px;min-height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 4px;}
+#st .stance-hint{color:#ffe680;font-style:italic;font-size:11px;margin-top:2px;}
+#btns{display:flex;gap:7px;flex-wrap:wrap;}
+.gb{flex:1;min-width:72px;padding:9px 5px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.20);border-radius:8px;color:#dff0d0;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:background .12s,transform .1s;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+.gb:hover{background:rgba(255,255,255,.18);}
+.gb:active{transform:scale(.96);}
+.gb.at{background:rgba(200,55,35,.28);border-color:rgba(220,75,55,.5);color:#ffded8;}
+.gb.at:hover{background:rgba(200,55,35,.44);}
+.gb.pt{background:rgba(50,120,50,.28);border-color:rgba(70,170,70,.44);color:#e5ffd5;}
+.gb.pt:hover{background:rgba(50,120,50,.44);}
+.gb.steer{background:rgba(55,95,45,.4);border-color:rgba(90,165,75,.5);color:#d6f2c4;font-size:11px;}
+.gb.steer:hover{background:rgba(70,120,55,.55);}
+.gb.primary{background:#3b7e28;border-color:#5bb240;color:#fff;box-shadow:0 4px 14px rgba(59,126,40,.4);}
+.gb.primary:hover{background:#479632;}
 </style>
 </head>
 <body>
 <div id="gw">
-<div id="sc2">
-  <canvas id="bg" width="380" height="270"></canvas>
-  <div id="dogs-wrap">
-    <svg id="dogs-svg2" width="150" height="115" viewBox="0 0 150 115" xmlns="http://www.w3.org/2000/svg">
-      <line id="leashL" x1="8" y1="115" x2="44" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
-      <line id="leashR" x1="142" y1="115" x2="106" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
-      <g id="dL">
-        <ellipse cx="44" cy="78" rx="23" ry="15" fill="#3a3a3a"/>
-        <ellipse cx="33" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
-        <ellipse cx="55" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
-        <ellipse cx="44" cy="87" rx="11" ry="8" fill="#484848"/>
-        <rect id="legL1" x="27" y="87" width="7" height="17" rx="3" fill="#2a2a2a"/>
-        <rect id="legL2" x="37" y="88" width="7" height="16" rx="3" fill="#333"/>
-        <rect id="legL3" x="47" y="88" width="7" height="16" rx="3" fill="#2a2a2a"/>
-        <rect id="legL4" x="57" y="87" width="7" height="17" rx="3" fill="#333"/>
-        <path id="tailL" d="M21 73 Q8 62 12 51" stroke="#484848" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <ellipse cx="44" cy="60" rx="17" ry="15" fill="#2d2d2d"/>
-        <ellipse cx="29" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(-13 29 56)"/>
-        <ellipse cx="59" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(13 59 56)"/>
-        <ellipse cx="42" cy="62" rx="9" ry="8" fill="#888" opacity="0.35"/>
-        <rect x="32" y="68" width="24" height="4" rx="2" fill="#d23232"/>
-      </g>
-      <g id="dR">
-        <ellipse cx="106" cy="78" rx="23" ry="15" fill="#6b3d1e"/>
-        <ellipse cx="95" cy="82" rx="9" ry="11" fill="#5a3018"/>
-        <ellipse cx="117" cy="82" rx="9" ry="11" fill="#5a3018"/>
-        <ellipse cx="106" cy="87" rx="11" ry="8" fill="#7a4828"/>
-        <rect id="legR1" x="89" y="87" width="7" height="17" rx="3" fill="#5a3018"/>
-        <rect id="legR2" x="99" y="88" width="7" height="16" rx="3" fill="#6b3d1e"/>
-        <rect id="legR3" x="109" y="88" width="7" height="16" rx="3" fill="#5a3018"/>
-        <rect id="legR4" x="119" y="87" width="7" height="17" rx="3" fill="#6b3d1e"/>
-        <path id="tailR" d="M129 73 Q142 62 138 51" stroke="#7a4828" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <path d="M136 55 Q142 50 139 45" stroke="#d4c8a8" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="106" cy="60" rx="17" ry="15" fill="#6b3d1e"/>
-        <ellipse cx="91" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(-13 91 56)"/>
-        <ellipse cx="121" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(13 121 56)"/>
-        <ellipse cx="104" cy="62" rx="9" ry="8" fill="#c8a46e" opacity="0.3"/>
-        <rect x="94" y="68" width="24" height="4" rx="2" fill="#256cb5"/>
-      </g>
-    </svg>
+  <div id="sc">
+    <canvas id="cv" width="380" height="240"></canvas>
+    <div id="dogs-wrap">
+      <svg width="150" height="115" viewBox="0 0 150 115">
+        <line x1="8" y1="115" x2="44" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
+        <line x1="142" y1="115" x2="106" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
+        <g id="dL">
+          <ellipse cx="44" cy="78" rx="23" ry="15" fill="#3a3a3a"/>
+          <ellipse cx="33" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
+          <ellipse cx="55" cy="82" rx="9" ry="11" fill="#2a2a2a"/>
+          <ellipse cx="44" cy="87" rx="11" ry="8" fill="#484848"/>
+          <rect id="legL1" x="27" y="87" width="7" height="17" rx="3" fill="#2a2a2a"/>
+          <rect x="37" y="88" width="7" height="16" rx="3" fill="#333"/>
+          <rect x="47" y="88" width="7" height="16" rx="3" fill="#2a2a2a"/>
+          <rect id="legL4" x="57" y="87" width="7" height="17" rx="3" fill="#333"/>
+          <path id="tL" d="M21 73 Q8 62 12 51" stroke="#484848" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <ellipse cx="44" cy="60" rx="17" ry="15" fill="#2d2d2d"/>
+          <ellipse cx="29" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(-13 29 56)"/>
+          <ellipse cx="59" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(13 59 56)"/>
+          <ellipse cx="42" cy="62" rx="9" ry="8" fill="#888" opacity="0.35"/>
+          <rect x="32" y="68" width="24" height="4" rx="2" fill="#d23232"/>
+        </g>
+        <g id="dR">
+          <ellipse cx="106" cy="78" rx="23" ry="15" fill="#6b3d1e"/>
+          <ellipse cx="95" cy="82" rx="9" ry="11" fill="#5a3018"/>
+          <ellipse cx="117" cy="82" rx="9" ry="11" fill="#5a3018"/>
+          <ellipse cx="106" cy="87" rx="11" ry="8" fill="#7a4828"/>
+          <rect id="legR1" x="89" y="87" width="7" height="17" rx="3" fill="#5a3018"/>
+          <rect x="99" y="88" width="7" height="16" rx="3" fill="#6b3d1e"/>
+          <rect x="109" y="88" width="7" height="16" rx="3" fill="#5a3018"/>
+          <rect id="legR4" x="119" y="87" width="7" height="17" rx="3" fill="#6b3d1e"/>
+          <path id="tR" d="M129 73 Q142 62 138 51" stroke="#7a4828" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M136 55 Q142 50 139 45" stroke="#d4c8a8" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="106" cy="60" rx="17" ry="15" fill="#6b3d1e"/>
+          <ellipse cx="91" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(-13 91 56)"/>
+          <ellipse cx="121" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(13 121 56)"/>
+          <ellipse cx="104" cy="62" rx="9" ry="8" fill="#c8a46e" opacity="0.3"/>
+          <rect x="94" y="68" width="24" height="4" rx="2" fill="#256cb5"/>
+        </g>
+      </svg>
+    </div>
+    <div id="enemy"></div>
+    <div id="flash"></div>
+    <div id="lv-b" class="hud-chip">Nivå <span id="lv">1</span></div>
+    <div id="pace-b" class="hud-chip">🌲 <span id="pace">LUNK</span></div>
+    <div id="sc-b" class="hud-chip">⭐ <span id="score">0</span></div>
+    <div id="snd-b" class="hud-chip" onclick="SFX.toggle()" title="Ljud av/på">🔊</div>
+    <div id="biome-label"></div>
   </div>
-  <div id="enemy3"></div>
-  <div id="flash3"></div>
-  <div id="lv-b" class="hud-chip">Nivå <span id="lv">1</span></div>
-  <div id="pace-b" class="hud-chip">🌲 <span id="pace">LUNK</span></div>
-  <div id="sc-b" class="hud-chip">⭐ <span id="sc">0</span></div>
-  <div id="snd-b" class="hud-chip" onclick="SFX.toggle()" title="Ljud av/på">🔊</div>
-  <div id="cross-label"></div>
-</div>
-<div id="ui3">
-  <div id="hp3">
-    <span class="pw" id="w1">🐾</span>
-    <span class="pw" id="w2">🐾</span>
-    <span class="pw" id="w3">🐾</span>
+  <div id="ui">
+    <div id="hp">
+      <span class="pw" id="h0">🐾</span><span class="pw" id="h1">🐾</span><span class="pw" id="h2">🐾</span>
+    </div>
+    <div id="st">Redo att ge sig ut?</div>
+    <div id="btns"><div class="gb primary" onclick="G.start()">🐕 Börja promenaden</div></div>
   </div>
-  <div id="st3">Redo för en promenad i skogen?</div>
-  <div id="bn3">
-    <div class="gb primary" onclick="G.start()">🐕 Börja promenaden</div>
-  </div>
-</div>
 </div>
 
 <script>
-// =============================================================================
-// Hundpromenaden - Skogsstig Edition med Top Gear Svängmekanik
-// =============================================================================
+  // ============================================================
+  // SFX — Web Audio synth (from v5)
+  // Declared globally (not inside onload) so inline onclick="SFX.toggle()"
+  // in the HTML markup can reach it immediately.
+  // ============================================================
+  const SFX = {
+    ctx: null, enabled: true, lastPatter: 0,
+    init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+    },
+    toggle() {
+      this.init();
+      this.enabled = !this.enabled;
+      const btn = document.getElementById('snd-b');
+      if (btn) btn.textContent = this.enabled ? '🔊' : '🔇';
+      if (this.enabled) this.tone(523, 0.08, 'triangle', 0.2);
+    },
+    tone(freq, dur=0.1, type='square', vol=0.15, freqEnd=null) {
+      if (!this.enabled) return;
+      this.init(); if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        if (freqEnd !== null) osc.frequency.exponentialRampToValueAtTime(Math.max(10,freqEnd), this.ctx.currentTime+dur);
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime+dur);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime+dur);
+      } catch(e) {}
+    },
+    patter() {
+      if (!this.enabled) return;
+      const now = performance.now();
+      if (now - this.lastPatter < 160) return;
+      this.lastPatter = now;
+      this.init(); if (!this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(90+Math.random()*20, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime+0.05);
+        gain.gain.setValueAtTime(0.065, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime+0.05);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime+0.05);
+      } catch(e) {}
+    },
+    swerve(pitchMod=1) {
+      if (!this.enabled) return;
+      this.init(); if (!this.ctx) return;
+      try {
+        const bufferSize = Math.floor(this.ctx.sampleRate*0.18);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i=0;i<bufferSize;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/(bufferSize*0.32));
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type='lowpass'; filter.frequency.setValueAtTime(520*pitchMod, this.ctx.currentTime); filter.Q.value=2.0;
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime+0.18);
+        noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+        noise.start();
+      } catch(e) {}
+    },
+    bark() { this.tone(360,0.08,'sawtooth',0.22,160); setTimeout(()=>this.tone(440,0.12,'sawtooth',0.24,180),80); },
+    jump() { this.tone(210,0.18,'sine',0.22,780); setTimeout(()=>this.tone(700,0.08,'triangle',0.15,420),120); },
+    bite() { this.tone(520,0.05,'square',0.2,140); setTimeout(()=>this.tone(190,0.08,'triangle',0.24,60),30); },
+    encounter() { this.tone(440,0.08,'square',0.18); setTimeout(()=>this.tone(880,0.16,'square',0.22),80); setTimeout(()=>this.tone(660,0.22,'sawtooth',0.16),180); },
+    victory() { [523.25,659.25,783.99,1046.50].forEach((f,i)=>setTimeout(()=>this.tone(f,0.12,'triangle',0.2),i*65)); },
+    hurt() { this.tone(280,0.14,'sawtooth',0.25,80); setTimeout(()=>this.tone(150,0.22,'triangle',0.2,50),100); },
+    levelUp() { [440,554,659,880,1108].forEach((f,i)=>setTimeout(()=>this.tone(f,0.14,'square',0.18),i*75)); }
+  };
 
-// Web Audio API Retro Ljudsyntes
-const SFX = {
-  ctx: null,
-  enabled: true,
-  lastPatter: 0,
+window.onload = function() {
 
-  init() {
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
+  // ============================================================
+  // ELEMENTS
+  // ============================================================
+  const cv  = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const W = 380, H = 240, HORIZON = 100;
+  cv.width = W; cv.height = H;
+
+  const elDogs  = document.getElementById('dogs-wrap');
+  const elEnemy = document.getElementById('enemy');
+  const elFlash = document.getElementById('flash');
+  const elLv    = document.getElementById('lv');
+  const elScore = document.getElementById('score');
+  const elPace  = document.getElementById('pace');
+  const elBiome = document.getElementById('biome-label');
+  const elSt    = document.getElementById('st');
+  const elBtns  = document.getElementById('btns');
+  const elHp    = [0,1,2].map(i => document.getElementById('h'+i));
+  const elTL    = document.getElementById('tL');
+  const elTR    = document.getElementById('tR');
+  const elLegL1 = document.getElementById('legL1');
+  const elLegR1 = document.getElementById('legR1');
+
+  // ============================================================
+  // GAME DATA
+  // ============================================================
+  const PACE_NAMES = {1:'Lugn lunk', 2:'Pigg trav', 3:'Full galopp'};
+
+  const CROSSINGS = [
+    {name:'Trevägskorsning', icon:'🌲', dirs:[{l:'⬅ Vänster',v:-1},{l:'⬆ Rakt',v:0},{l:'➡ Höger',v:1}]},
+    {name:'T-korsning',      icon:'🌲', dirs:[{l:'⬅ Vänster',v:-1},{l:'➡ Höger',v:1}]},
+    {name:'Gaffelkorsning',  icon:'🌲', dirs:[{l:'↖ Skogen',v:-1},{l:'↗ Öppet fält',v:1}]},
+    {name:'Kurva',           icon:'🌿', dirs:[{l:'⬅ Sväng vänster',v:-1},{l:'➡ Sväng höger',v:1}]},
+  ];
+
+  // Enemies with rotating stances + memory (from v5), kept in Swedish
+  const ENEMY_CATALOG = [
+    { icon:'🦊', name:'räv', lv:1, stances:[
+      {desc:'Räven smyger lågt i slyet med spetsade öron.', hint:'Låga smygare skräms av höga rörelser och överraskande skall!', good:['skälla','hoppa'], failMsg:'Räven duckar bakom stubben! Den bryr sig inte om nafset.'},
+      {desc:'Räven ställer sig bredbent mitt på stigen och visar gaddarna.', hint:'När räven utmanar måste hundarna visa vem som bestämmer med kraft!', good:['bita','skälla'], failMsg:'Att hoppa hjälpte inte, räven stod kvar och blängde!'},
+      {desc:'Räven gör blixtsnabba sidosteg för att finta hundarna.', hint:'För snabba språng krävs ett vältajmat mot-hopp eller bett!', good:['hoppa','bita'], failMsg:'Ett skall hann inte träffa den snabbfotade räven!'}
+    ]},
+    { icon:'🐦', name:'korp', lv:1, stances:[
+      {desc:'Korpen dyker i cirklar rakt mot hundarnas huvuden och kraxar hånfullt.', hint:'Fåglar i luften kan mötas med ett flygande skutt eller ett skarpt skall!', good:['hoppa','skälla'], failMsg:'Korpen flyger alldeles för högt för att nå med ett nafs!'},
+      {desc:'Korpen sitter på en låg tallgren och vägrar flytta på sig.', hint:'Skall ekar genom trädkronorna och får fågeln att tappa fattningen!', good:['skälla','hoppa'], failMsg:'Grenen är för högt upp för att bita från marken!'},
+      {desc:'Korpen pickar djärvt i marken bara en halvmeter framför nosarna.', hint:'Marknära fåglar överrumplas snabbt med ett kraftfullt bett eller hopp!', good:['bita','hoppa'], failMsg:'Korpen bryr sig inte om skallet när den har mat i sikte!'}
+    ]},
+    { icon:'🦔', name:'igelkott', lv:2, stances:[
+      {desc:'Igelkotten rullar ihop sig till en stenhård boll av vassa taggar.', hint:'Rör inte taggarna! Enda säkra sättet är att elegant hoppa över den!', good:['hoppa'], failMsg:'Aj aj aj! Taggarna stack rakt in i hundens nos!'},
+      {desc:'Igelkotten prasslar fram och väser hotfullt med nosen i vädret.', hint:'Ett högt skall får igelkotten att retirera in i buskaget!', good:['skälla','hoppa'], failMsg:'Att bita en taggig krabat slutar alltid i tårar!'}
+    ]},
+    { icon:'🦌', name:'rådjur', lv:2, stances:[
+      {desc:'Rådjuret fryser blickstilla mitt på stigen med stora stirrande ögon.', hint:'Rådjur har känslig hörsel och flyr fort vid kraftigt skall!', good:['skälla','hoppa'], failMsg:'Rådjuret står för långt bort för att nå med tänderna!'},
+      {desc:'Rådjuret spänner sina kraftiga bakben och gör sig redo för en spark.', hint:'Hoppa undan klövarna i tid för att inte bli träffad!', good:['hoppa','skälla'], failMsg:'Att springa rakt mot klövarna ledde till en smäll!'}
+    ]},
+    { icon:'🐺', name:'varg', lv:3, stances:[
+      {desc:'Vargen står orubblig med sänkt huvud och morrar djupt i bröstet.', hint:'Flockledaren backar inte för ljud – bara hårt motstånd med bett!', good:['bita'], failMsg:'Ett enkelt skall skrämmer ingen hungrig varg!'},
+      {desc:'Vargen försöker snabbt smyga runt på sidan för att flankera er.', hint:'Ett snabbt mot-hopp blockerar vargens väg och tvingar den bakåt!', good:['hoppa','bita'], failMsg:'Vargen gled undan och tog kontroll över stigen!'},
+      {desc:'Vargen reser ragg och ställer sig i full motståndsposition.', hint:'Då krävs det att båda hundarna skäller i kör eller biter till!', good:['skälla','bita'], failMsg:'Ett hopp i luften lämnade magen helt oskyddad!'}
+    ]},
+    { icon:'🐗', name:'vildsvin', lv:3, stances:[
+      {desc:'Ett dundrande vildsvin sänker trynet och rusar rakt mot er i full fart!', hint:'Stå inte i vägen för galtens betar! Hoppa åt sidan i sista sekunden!', good:['hoppa'], failMsg:'Att bita mot en dundrande galt gör bara ont!'},
+      {desc:'Vildsvinet bökar ilsket och kastar upp jord och rötter över stigen.', hint:'Överraska galten med ett massivt skall innan den hinner ladda!', good:['skälla','hoppa'], failMsg:'Trynet är pansarhårt – tänderna gled bara av borsten!'}
+    ]}
+  ];
+
+  // Enemy memory: same enemy rotates through its stances, doesn't repeat immediately
+  const EnemyMemory = {};
+  function getRotatedEnemy(level) {
+    const pool = ENEMY_CATALOG.filter(e => e.lv <= level);
+    const template = pool[Math.floor(Math.random()*pool.length)];
+    if (!EnemyMemory[template.name]) {
+      EnemyMemory[template.name] = { encounters:0, lastStanceIndex:-1 };
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
-  },
-
-  toggle() {
-    this.init();
-    this.enabled = !this.enabled;
-    const btn = document.getElementById('snd-b');
-    if (btn) btn.textContent = this.enabled ? '🔊' : '🔇';
-    if (this.enabled) this.tone(523, 0.08, 'triangle', 0.2);
-  },
-
-  tone(freq, dur = 0.1, type = 'square', vol = 0.15, freqEnd = null) {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-    try {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-      if (freqEnd !== null) {
-        osc.frequency.exponentialRampToValueAtTime(Math.max(10, freqEnd), this.ctx.currentTime + dur);
-      }
-      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + dur);
-    } catch(e) {}
-  },
-
-  patter() {
-    if (!this.enabled) return;
-    const now = performance.now();
-    if (now - this.lastPatter < 160) return;
-    this.lastPatter = now;
-    this.init();
-    if (!this.ctx) return;
-    try {
-      // Mjukt tassande på mjuk skogsjord och löv
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(90 + Math.random() * 20, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.05);
-      gain.gain.setValueAtTime(0.065, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + 0.05);
-    } catch(e) {}
-  },
-
-  swerve(pitchMod = 1) {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-    try {
-      // Löv- och vindsus när stigen kröker sig
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.32));
-      }
-      const noise = this.ctx.createBufferSource();
-      noise.buffer = buffer;
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(520 * pitchMod, this.ctx.currentTime);
-      filter.Q.value = 2.0;
-      const gain = this.ctx.createGain();
-      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-      noise.start();
-    } catch(e) {}
-  },
-
-  bark() {
-    this.tone(360, 0.08, 'sawtooth', 0.22, 160);
-    setTimeout(() => this.tone(440, 0.12, 'sawtooth', 0.24, 180), 80);
-  },
-
-  jump() {
-    this.tone(210, 0.18, 'sine', 0.22, 780);
-    setTimeout(() => this.tone(700, 0.08, 'triangle', 0.15, 420), 120);
-  },
-
-  bite() {
-    this.tone(520, 0.05, 'square', 0.2, 140);
-    setTimeout(() => this.tone(190, 0.08, 'triangle', 0.24, 60), 30);
-  },
-
-  encounter() {
-    this.tone(440, 0.08, 'square', 0.18);
-    setTimeout(() => this.tone(880, 0.16, 'square', 0.22), 80);
-    setTimeout(() => this.tone(660, 0.22, 'sawtooth', 0.16), 180);
-  },
-
-  victory() {
-    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-      setTimeout(() => this.tone(freq, 0.12, 'triangle', 0.2), idx * 65);
-    });
-  },
-
-  hurt() {
-    this.tone(280, 0.14, 'sawtooth', 0.25, 80);
-    setTimeout(() => this.tone(150, 0.22, 'triangle', 0.2, 50), 100);
-  },
-
-  levelUp() {
-    [440, 554, 659, 880, 1108].forEach((f, i) => {
-      setTimeout(() => this.tone(f, 0.14, 'square', 0.18), i * 75);
-    });
-  }
-};
-
-// =============================================================================
-// Pseudo-3D Skogsstig Renderer (Top Gear Svängar i Skogsmiljö)
-// =============================================================================
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-
-const HORIZON = 104;
-const SCREEN_W = 380;
-const SCREEN_H = 270;
-
-let roadZ = 0;              // Distans längs skogsstigen
-let roadCurve = 0;          // Nuvarande synliga kurva
-let targetCurve = 0;        // Målkurva som stigen böjer mot
-let playerX = 0;            // Hundarnas sidoposition (-1 vänster, 0 mitt, +1 höger)
-let targetPlayerX = 0;      // Styrning
-let horizonShift = 0;       // Bakgrundsrullning
-let paceLevel = 1;          // 1: Lunk, 2: Trav, 3: Galopp
-let dogLean = 0;
-
-// Skogsobjekt längs stigen
-let roadsideObjects = [];
-
-function initRoadsideObjects() {
-  roadsideObjects = [];
-  const types = ['tree', 'birch', 'tree', 'rock', 'stump', 'tree', 'mushroom', 'fern'];
-  for (let i = 0; i < 32; i++) {
-    roadsideObjects.push({
-      z: 40 + i * 36 + Math.random() * 15,
-      side: i % 2 === 0 ? -1 - Math.random() * 0.35 : 1 + Math.random() * 0.35,
-      type: types[i % types.length],
-      scale: 0.85 + Math.random() * 0.35
-    });
-  }
-}
-initRoadsideObjects();
-
-// Skogshorisont med djupa granåsar
-function drawHorizon(shift) {
-  const skyGrad = ctx.createLinearGradient(0, 0, 0, HORIZON);
-  skyGrad.addColorStop(0, '#4a6f43');
-  skyGrad.addColorStop(0.65, '#769b62');
-  skyGrad.addColorStop(1, '#aed18e');
-  ctx.fillStyle = skyGrad;
-  ctx.fillRect(0, 0, SCREEN_W, HORIZON);
-
-  // Solstrimmor
-  ctx.save();
-  ctx.globalAlpha = 0.08;
-  ctx.fillStyle = '#ffffe0';
-  [[190,0,150,HORIZON],[130,0,90,HORIZON],[250,0,210,HORIZON]].forEach(([x1,y1,x2,y2])=>{
-    ctx.beginPath();
-    ctx.moveTo(x1-20, y1); ctx.lineTo(x1+20, y1);
-    ctx.lineTo(x2+35, y2); ctx.lineTo(x2-35, y2);
-    ctx.fill();
-  });
-  ctx.restore();
-
-  // Skogsåsar (Parallax nivå 1)
-  ctx.save();
-  ctx.fillStyle = '#2f4a2b';
-  ctx.beginPath();
-  const mOff = ((shift * 0.3) % SCREEN_W) - SCREEN_W;
-  for (let x = mOff; x < SCREEN_W * 2; x += 110) {
-    ctx.moveTo(x, HORIZON);
-    ctx.lineTo(x + 30, HORIZON - 24);
-    ctx.lineTo(x + 65, HORIZON - 16);
-    ctx.lineTo(x + 100, HORIZON - 30);
-    ctx.lineTo(x + 125, HORIZON);
-  }
-  ctx.fill();
-
-  // Grantoppssiluett (Parallax nivå 2)
-  ctx.fillStyle = '#1c3317';
-  ctx.beginPath();
-  const fOff = ((shift * 0.7) % SCREEN_W) - SCREEN_W;
-  for (let x = fOff; x < SCREEN_W * 2; x += 32) {
-    ctx.moveTo(x, HORIZON);
-    ctx.lineTo(x + 10, HORIZON - 15);
-    ctx.lineTo(x + 20, HORIZON - 20);
-    ctx.lineTo(x + 28, HORIZON - 12);
-    ctx.lineTo(x + 32, HORIZON);
-  }
-  ctx.fill();
-  ctx.restore();
-}
-
-// Rendera skogsstigen (Mossa, jord, stenar, trampade spår)
-function renderTrail(curve, camX, distance) {
-  drawHorizon(horizonShift);
-
-  const roadH = SCREEN_H - HORIZON;
-  const stripeFreq = 16;
-
-  for (let y = HORIZON; y < SCREEN_H; y += 2) {
-    const p = (y - HORIZON) / roadH;
-    const pPow = Math.pow(p, 1.75);
-    const z = 1 / (p + 0.001);
-
-    // Top Gear-kurvatur med mjuk perspektivprojektion
-    const curveOffset = curve * Math.pow(p, 2.1) * 165;
-    const steerOffset = -camX * p * 135;
-    const trailCenterX = (SCREEN_W / 2) + curveOffset + steerOffset;
-
-    // Naturlig bredd på skogsstigen
-    const trailWidth = 20 + pPow * 230;
-    const halfW = trailWidth / 2;
-
-    const segment = Math.floor((distance + z * 8) / stripeFreq) % 2;
-
-    // 1. Skogsmark & Mossa på sidorna
-    ctx.fillStyle = (segment === 0) ? '#264218' : '#1c3412';
-    ctx.fillRect(0, y, SCREEN_W, 2);
-
-    // 2. Naturlig mjuk stigkant med mossa och barr
-    const edgeW = 5 + p * 16;
-    ctx.fillStyle = (segment === 0) ? '#385322' : '#2d431a';
-    ctx.fillRect(trailCenterX - halfW - edgeW, y, edgeW, 2);
-    ctx.fillRect(trailCenterX + halfW, y, edgeW, 2);
-
-    // 3. Stigens trampade jordyta
-    ctx.fillStyle = (segment === 0) ? '#5c4533' : '#523c2c';
-    ctx.fillRect(trailCenterX - halfW, y, trailWidth, 2);
-
-    // 4. Slitspår i stigen
-    if (p > 0.1) {
-      const trackW = Math.max(2, p * 8);
-      ctx.fillStyle = (segment === 0) ? '#4a3424' : '#422e1e';
-      ctx.fillRect(trailCenterX - halfW * 0.45 - trackW / 2, y, trackW, 2);
-      ctx.fillRect(trailCenterX + halfW * 0.45 - trackW / 2, y, trackW, 2);
-
-      if (segment === 1 && p > 0.25 && ((Math.floor(y) % 8) === 0)) {
-        ctx.fillStyle = '#826f58';
-        ctx.fillRect(trailCenterX - 2, y, 4, 1.5);
-      }
-    }
-  }
-
-  drawForestScenery(curve, camX, distance);
-}
-
-function drawForestScenery(curve, camX, distance) {
-  const visible = roadsideObjects.map(obj => {
-    let relZ = (obj.z - (distance % 1152) + 1152) % 1152;
-    return { ...obj, relZ };
-  }).filter(obj => obj.relZ > 22 && obj.relZ < 1050);
-
-  visible.sort((a, b) => b.relZ - a.relZ);
-
-  visible.forEach(obj => {
-    const p = Math.min(1.2, 175 / obj.relZ);
-    if (p <= 0.05) return;
-
-    const screenY = HORIZON + p * (SCREEN_H - HORIZON) * 0.88;
-    if (screenY < HORIZON || screenY > SCREEN_H + 40) return;
-
-    const curveOffset = curve * Math.pow(p, 2.1) * 165;
-    const steerOffset = -camX * p * 135;
-    const trailCenterX = (SCREEN_W / 2) + curveOffset + steerOffset;
-    const trailWidth = 20 + Math.pow(p, 1.75) * 230;
-    const halfW = trailWidth / 2;
-
-    const edgeW = 5 + p * 16;
-    const sideMargin = (12 + obj.relZ * 0.02) * p;
-    const screenX = trailCenterX + (obj.side > 0 ? (halfW + edgeW + sideMargin) : -(halfW + edgeW + sideMargin));
-
-    ctx.save();
-    ctx.translate(screenX, screenY);
-    const sz = p * 42 * obj.scale;
-
-    if (obj.type === 'tree') {
-      ctx.fillStyle = '#3a2414';
-      ctx.fillRect(-sz * 0.08, -sz * 0.35, sz * 0.16, sz * 0.35);
-      ctx.fillStyle = '#183610';
-      ctx.beginPath();
-      ctx.moveTo(0, -sz * 1.3);
-      ctx.lineTo(sz * 0.44, -sz * 0.35);
-      ctx.lineTo(-sz * 0.44, -sz * 0.35);
-      ctx.fill();
-      ctx.fillStyle = '#224d18';
-      ctx.beginPath();
-      ctx.moveTo(0, -sz * 1.3);
-      ctx.lineTo(sz * 0.36, -sz * 0.65);
-      ctx.lineTo(-sz * 0.36, -sz * 0.65);
-      ctx.fill();
-    } else if (obj.type === 'birch') {
-      ctx.fillStyle = '#dfd8cc';
-      ctx.fillRect(-sz * 0.07, -sz * 0.5, sz * 0.14, sz * 0.5);
-      ctx.fillStyle = '#294814';
-      ctx.beginPath();
-      ctx.ellipse(0, -sz * 0.8, sz * 0.38, sz * 0.45, 0, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (obj.type === 'rock') {
-      ctx.fillStyle = '#4c463f';
-      ctx.beginPath();
-      ctx.ellipse(0, -sz * 0.15, sz * 0.35, sz * 0.22, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#596e38';
-      ctx.beginPath();
-      ctx.ellipse(-sz * 0.06, -sz * 0.22, sz * 0.22, sz * 0.11, 0, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (obj.type === 'stump') {
-      ctx.fillStyle = '#48321e';
-      ctx.fillRect(-sz * 0.14, -sz * 0.22, sz * 0.28, sz * 0.22);
-      ctx.fillStyle = '#785b3b';
-      ctx.beginPath();
-      ctx.ellipse(0, -sz * 0.22, sz * 0.14, sz * 0.07, 0, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (obj.type === 'mushroom') {
-      ctx.fillStyle = '#ece5d8';
-      ctx.fillRect(-sz * 0.04, -sz * 0.18, sz * 0.08, sz * 0.18);
-      ctx.fillStyle = '#b83226';
-      ctx.beginPath();
-      ctx.arc(0, -sz * 0.18, sz * 0.12, Math.PI, 0);
-      ctx.fill();
-    } else {
-      ctx.fillStyle = '#2d5c1b';
-      ctx.beginPath();
-      ctx.ellipse(0, -sz * 0.16, sz * 0.3, sz * 0.18, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-  });
-}
-
-// =============================================================================
-// Korsningar & Fiendekatalog med Dynamiskt Minne och Roterande Taktik
-// =============================================================================
-const CROSSINGS = [
-  { name: 'T-korsning i tallskogen',  dirs: ['⬅ Vänster stig', '➡ Höger stig'],             targetCurve: -1.05, altCurve: 1.05 },
-  { name: 'Trevägsstig vid forsen',   dirs: ['⬅ Vänster', '⬆ Rakt fram', '➡ Höger'],        targetCurve: -0.8,  altCurve: 0.8 },
-  { name: 'Brant kurva runt krönet',  dirs: ['⬅ Slingrande kurva', '⬆ Genväg över åsen'],   targetCurve: -1.25, altCurve: 0.2 },
-  { name: 'Sjövägen mot viken',       dirs: ['⬆ Mot sjön', '➡ Uppåt berget'],               targetCurve: 0.1,   altCurve: 1.15 },
-  { name: 'Gaffelkorsning i gläntan', dirs: ['↖ Granstigen', '↗ Björkallén'],               targetCurve: -0.7,  altCurve: 0.7 },
-  { name: 'Mossig träbro',            dirs: ['⬆ Över bron', '↙ Genom snåret'],              targetCurve: 0.0,   altCurve: -0.9 },
-];
-
-const ENEMY_CATALOG = [
-  {
-    icon: '🦊',
-    name: 'räv',
-    lv: 1,
-    stances: [
-      {
-        desc: 'Räven smyger lågt i slyet med spetsade öron.',
-        hint: 'Låga smygare skräms av höga rörelser och överraskande skall!',
-        good: ['skälla', 'hoppa'],
-        best: 'skälla',
-        failMsg: 'Räven duckar bakom stubben! Den bryr sig inte om nafset.'
-      },
-      {
-        desc: 'Räven ställer sig bredbent mitt på stigen och visar gaddarna.',
-        hint: 'När räven utmanar måste hundarna visa vem som bestämmer med kraft!',
-        good: ['bita', 'skälla'],
-        best: 'bita',
-        failMsg: 'Att hoppa hjälpte inte, räven stod kvar och blängde!'
-      },
-      {
-        desc: 'Räven gör blixtsnabba sidosteg för att finta hundarna.',
-        hint: 'För snabba språng krävs ett vältajmat mot-hopp eller bett!',
-        good: ['hoppa', 'bita'],
-        best: 'hoppa',
-        failMsg: 'Ett skall hann inte träffa den snabbfotade räven!'
-      }
-    ]
-  },
-  {
-    icon: '🐦',
-    name: 'korp',
-    lv: 1,
-    stances: [
-      {
-        desc: 'Korpen dyker i cirklar rakt mot hundarnas huvuden och kraxar hånfullt.',
-        hint: 'Fåglar i luften kan mötas med ett flygande skutt eller ett skarpt skall!',
-        good: ['hoppa', 'skälla'],
-        best: 'hoppa',
-        failMsg: 'Korpen flyger alldeles för högt för att nå med ett nafs!'
-      },
-      {
-        desc: 'Korpen sitter på en låg tallgren och vägrar flytta på sig.',
-        hint: 'Skall ekar genom trädkronorna och får fågeln att tappa fattningen!',
-        good: ['skälla', 'hoppa'],
-        best: 'skälla',
-        failMsg: 'Grenen är för högt upp för att bita från marken!'
-      },
-      {
-        desc: 'Korpen pickar djärvt i marken bara en halvmeter framför nosarna.',
-        hint: 'Marknära fåglar överrumplas snabbt med ett kraftfullt bett eller hopp!',
-        good: ['bita', 'hoppa'],
-        best: 'bita',
-        failMsg: 'Korpen bryr sig inte om skallet när den har mat i sikte!'
-      }
-    ]
-  },
-  {
-    icon: '🦔',
-    name: 'igelkott',
-    lv: 2,
-    stances: [
-      {
-        desc: 'Igelkotten rullar ihop sig till en stenhård boll av vassa taggar.',
-        hint: 'Rör inte taggarna! Enda säkra sättet är att elegant hoppa över den!',
-        good: ['hoppa'],
-        best: 'hoppa',
-        failMsg: 'Aj aj aj! Taggarna stack rakt in i hundens nos!'
-      },
-      {
-        desc: 'Igelkotten prasslar fram och väser hotfullt med nosen i vädret.',
-        hint: 'Ett högt skall får igelkotten att retirera in i buskaget!',
-        good: ['skälla', 'hoppa'],
-        best: 'skälla',
-        failMsg: 'Att bita en taggig krabat slutar alltid i tårar!'
-      }
-    ]
-  },
-  {
-    icon: '🦌',
-    name: 'rådjur',
-    lv: 2,
-    stances: [
-      {
-        desc: 'Rådjuret fryser blickstilla mitt på stigen med stora stirrande ögon.',
-        hint: 'Rådjur har känslig hörsel och flyr fort vid kraftigt skall!',
-        good: ['skälla', 'hoppa'],
-        best: 'skälla',
-        failMsg: 'Rådjuret står för långt bort för att nå med tänderna!'
-      },
-      {
-        desc: 'Rådjuret spänner sina kraftiga bakben och gör sig redo för en spark.',
-        hint: 'Hoppa undan klövarna i tid för att inte bli träffad!',
-        good: ['hoppa', 'skälla'],
-        best: 'hoppa',
-        failMsg: 'Att springa rakt mot klövarna ledde till en smäll!'
-      }
-    ]
-  },
-  {
-    icon: '🐺',
-    name: 'varg',
-    lv: 3,
-    stances: [
-      {
-        desc: 'Vargen står orubblig med sänkt huvud och morrar djupt i bröstet.',
-        hint: 'Flockledaren backar inte för ljud – bara hårt motstånd med bett!',
-        good: ['bita'],
-        best: 'bita',
-        failMsg: 'Ett enkelt skall skrämmer ingen hungrig varg!'
-      },
-      {
-        desc: 'Vargen försöker snabbt smyga runt på sidan för att flankera er.',
-        hint: 'Ett snabbt mot-hopp blockerar vargens väg och tvingar den bakåt!',
-        good: ['hoppa', 'bita'],
-        best: 'hoppa',
-        failMsg: 'Vargen gled undan och tog kontroll över stigen!'
-      },
-      {
-        desc: 'Vargen reser ragg och ställer sig i full motståndsposition.',
-        hint: 'Då krävs det att båda hundarna skäller i kör eller biter till!',
-        good: ['skälla', 'bita'],
-        best: 'skälla',
-        failMsg: 'Ett hopp i luften lämnade magen helt oskyddad!'
-      }
-    ]
-  },
-  {
-    icon: '🐗',
-    name: 'vildsvin',
-    lv: 3,
-    stances: [
-      {
-        desc: 'Ett dundrande vildsvin sänker trynet och rusar rakt mot er i full fart!',
-        hint: 'Stå inte i vägen för galtens betar! Hoppa åt sidan i sista sekunden!',
-        good: ['hoppa'],
-        best: 'hoppa',
-        failMsg: 'Att bita mot en dundrande galt gör bara ont!'
-      },
-      {
-        desc: 'Vildsvinet bökar ilsket och kastar upp jord och rötter över stigen.',
-        hint: 'Överraska galten med ett massivt skall innan den hinner ladda!',
-        good: ['skälla', 'hoppa'],
-        best: 'skälla',
-        failMsg: 'Trynet är pansarhårt – tänderna gled bara av borsten!'
-      }
-    ]
-  }
-];
-
-const EnemyMemory = {};
-
-function getRotatedEnemy(level) {
-  const pool = ENEMY_CATALOG.filter(e => e.lv <= level);
-  const template = pool[Math.floor(Math.random() * pool.length)];
-
-  if (!EnemyMemory[template.name]) {
-    EnemyMemory[template.name] = {
-      encounters: 0,
-      lastStanceIndex: -1,
-      lastActionUsed: null
+    const mem = EnemyMemory[template.name];
+    mem.encounters++;
+    const stanceIdx = (mem.lastStanceIndex+1) % template.stances.length;
+    mem.lastStanceIndex = stanceIdx;
+    return {
+      icon: template.icon, name: template.name, lv: template.lv,
+      stance: template.stances[stanceIdx], encounters: mem.encounters
     };
   }
-  const mem = EnemyMemory[template.name];
-  mem.encounters++;
 
-  const stanceIdx = (mem.lastStanceIndex + 1) % template.stances.length;
-  mem.lastStanceIndex = stanceIdx;
-  const currentStance = template.stances[stanceIdx];
+  // ============================================================
+  // MODE-7 FOREST PATH RENDERER (kept as-is from v4 — this is the good one)
+  // ============================================================
+  let targetCurve  = 0;
+  let currentCurve = 0;
+  let camAngle     = 0;
+  let scroll       = 0;
+  let walking      = false;
+  let returnTimer  = null;
 
-  return {
-    icon: template.icon,
-    name: template.name,
-    lv: template.lv,
-    stance: currentStance,
-    encounters: mem.encounters,
-    lastActionUsed: mem.lastActionUsed
-  };
-}
+  // Active steering while walking (from v5) — nudges the curve target
+  let steerX = 0;       // -1..1, player's lateral steering input
+  let targetSteerX = 0;
 
-// =============================================================================
-// Spelmotor
-// =============================================================================
-const PACE_NAMES = {
-  1: 'Lugn lunk',
-  2: 'Pigg trav',
-  3: 'Full galopp'
-};
+  const ROWS = H - HORIZON;
+  const depthLUT = new Float32Array(ROWS);
+  for (let sy = 0; sy < ROWS; sy++) depthLUT[sy] = 200 / (sy + 1);
 
-const G = {
-  hp: 3,
-  sc: 0,
-  lv: 1,
-  en: null,
-  walking: false,
-  walkTimer: null,
-  stepCount: 0,
-
-  start() {
-    SFX.init();
-    SFX.victory();
-    this.hp = 3;
-    this.sc = 0;
-    this.lv = 1;
-    paceLevel = 1;
-    targetCurve = 0;
-    roadCurve = 0;
-    playerX = 0;
-    targetPlayerX = 0;
-    this.updateUI();
-    this.walk();
-  },
-
-  updateUI() {
-    document.getElementById('lv').textContent = this.lv;
-    document.getElementById('sc').textContent = this.sc;
-    document.getElementById('pace').textContent = PACE_NAMES[paceLevel] || 'Trav';
-
-    for (let i = 1; i <= 3; i++) {
-      const p = document.getElementById('w' + i);
-      if (p) {
-        p.style.opacity = (i <= this.hp) ? '1' : '0.2';
-        p.style.transform = (i <= this.hp) ? 'scale(1)' : 'scale(0.8)';
-      }
+  function setCurve(v, autoReturn) {
+    targetCurve = v;
+    if (autoReturn && v !== 0) {
+      clearTimeout(returnTimer);
+      returnTimer = setTimeout(() => { targetCurve = 0; }, 1700);
     }
-  },
+  }
 
-  flash(txt, col = '#fff') {
-    const f = document.getElementById('flash3');
-    f.textContent = txt;
-    f.style.color = col;
-    f.style.display = 'block';
-    clearTimeout(this._ft);
-    this._ft = setTimeout(() => { f.style.display = 'none'; }, 1600);
-  },
+  function drawSky() {
+    const sg = ctx.createLinearGradient(0,0,0,HORIZON);
+    sg.addColorStop(0,'#8fb0d8');
+    sg.addColorStop(1,'#bcd9a8');
+    ctx.fillStyle = sg;
+    ctx.fillRect(0,0,W,HORIZON);
 
-  setStatus(html) {
-    document.getElementById('st3').innerHTML = html;
-  },
-
-  setBtns(list) {
-    const b = document.getElementById('bn3');
-    b.innerHTML = '';
-    list.forEach(item => {
-      const d = document.createElement('div');
-      d.className = 'gb ' + (item.cls || '');
-      d.textContent = item.t;
-      d.onclick = () => {
-        SFX.init();
-        if (item.fn) item.fn();
-      };
-      b.appendChild(d);
-    });
-  },
-
-  steer(dir) {
-    targetPlayerX = Math.max(-0.85, Math.min(0.85, targetPlayerX + dir * 0.45));
-    dogLean = targetPlayerX * 16;
-    SFX.swerve(dir < 0 ? 0.9 : 1.15);
-  },
-
-  walk(forcedCurve = null) {
-    if (this.walkTimer) clearInterval(this.walkTimer);
-    this.walking = true;
-    document.getElementById('cross-label').style.display = 'none';
-    const enemyEl = document.getElementById('enemy3');
-    enemyEl.style.display = 'none';
-    enemyEl.className = '';
-
-    if (forcedCurve !== null) {
-      targetCurve = forcedCurve;
-    } else {
-      const curves = [0, -0.7, 0.75, -1.1, 0.95, 0];
-      targetCurve = curves[Math.floor(Math.random() * curves.length)];
+    ctx.fillStyle = '#183a10';
+    ctx.fillRect(0, HORIZON-22, W, 26);
+    const off = ((camAngle * 80) % 26 + 26) % 26;
+    for (let x = -26; x < W+26; x += 26) {
+      const xx = x + off;
+      const hh = 12 + Math.sin(xx*0.18)*5 + Math.cos(xx*0.4)*4;
+      ctx.fillStyle = '#132c0b';
+      ctx.fillRect(xx, HORIZON-22-hh, 24, hh+3);
     }
+    ctx.save(); ctx.globalAlpha = 0.10; ctx.fillStyle = '#fff8d8';
+    ctx.beginPath(); ctx.ellipse(W*0.5, 20, 120, 40, 0, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
 
-    if (Math.abs(targetCurve) > 0.4) {
-      SFX.swerve(1.15);
-    }
+  function drawGroundPlane() {
+    const PATH_HALF = 1.15;
 
-    paceLevel = Math.min(3, Math.max(1, this.lv));
-    this.updateUI();
+    currentCurve += (targetCurve - currentCurve) * 0.045;
+    // Active steering blends into the curve calculation
+    steerX += (targetSteerX - steerX) * 0.08;
+    camAngle     -= currentCurve * 0.0012;
+    if (walking) scroll += 0.065;
 
-    const curveDesc = targetCurve < -0.3 ? 'Stigen svänger skarpt åt vänster!' :
-                      targetCurve > 0.3 ? 'Stigen kröker sig åt höger!' :
-                      'Stigen slingrar sig framåt genom skogen.';
+    const img  = ctx.createImageData(W, ROWS);
+    const data = img.data;
 
-    this.setStatus(`Hundarna travar längs stigen. ${curveDesc}`);
+    for (let sy = 0; sy < ROWS; sy++) {
+      const z = depthLUT[sy];
+      const curveX  = -currentCurve * z * z * 0.010 - steerX * z * 0.55;
+      const wz_base = z + scroll;
+      const fog = z > 50 ? 1 : z / 50;
 
-    this.setBtns([
-      { t: '◀ Sväng vänster', cls: 'steer', fn: () => this.steer(-1) },
-      { t: '🐾 Håll spåret', cls: '', fn: () => { targetPlayerX = 0; SFX.patter(); } },
-      { t: 'Sväng höger ▶', cls: 'steer', fn: () => this.steer(1) }
-    ]);
+      for (let sx = 0; sx < W; sx++) {
+        const wx = (sx - W*0.5) * z / 200 + curveX;
+        const wz = wz_base;
 
-    this.stepCount = 0;
-    const speed = 12 + paceLevel * 4;
+        const absWx  = wx < 0 ? -wx : wx;
+        const onPath = absWx < PATH_HALF;
+        const onEdge = absWx >= PATH_HALF - 0.12 && absWx < PATH_HALF + 0.20;
 
-    this.walkTimer = setInterval(() => {
-      this.stepCount++;
-      roadZ += speed;
+        const speckle = (((wx*7)|0) ^ ((wz*3)|0)) & 3;
+        const grassCk = (((wx*1.3)|0) + ((wz*0.45)|0)) % 2 === 0;
+        const stoneNoise = (((wx*11.3+wz*6.1)|0) % 97);
+        const onStone = onPath && stoneNoise === 3 && z < 40;
 
-      roadCurve += (targetCurve - roadCurve) * 0.12;
-      playerX += (targetPlayerX - playerX) * 0.14;
-      horizonShift += (targetCurve * 2.6 - playerX * 1.4);
-
-      const dogBob = Math.sin(roadZ * 0.22) * 3.5;
-      dogLean += ((playerX * 14) - dogLean) * 0.2;
-      const dogsWrap = document.getElementById('dogs-wrap');
-      const pixelOffset = playerX * 80;
-      dogsWrap.style.transform = `translateX(calc(-50% + ${pixelOffset}px)) translateY(${dogBob}px) rotate(${dogLean}deg)`;
-
-      const trot = Math.sin(roadZ * 0.25);
-      const legL1 = document.getElementById('legL1');
-      const legR1 = document.getElementById('legR1');
-      if (legL1 && legR1) {
-        legL1.setAttribute('y', 87 + trot * 2);
-        legR1.setAttribute('y', 87 - trot * 2);
-      }
-
-      if (this.stepCount % 5 === 0) {
-        SFX.patter();
-      }
-
-      renderTrail(roadCurve, playerX, roadZ);
-
-      if (this.stepCount > 34) {
-        clearInterval(this.walkTimer);
-        this.walkTimer = null;
-        this.walking = false;
-        this.sc += 15;
-        this.updateUI();
-
-        if (Math.random() < 0.45) {
-          this.triggerCross();
+        let r,g,b;
+        if (onStone) { r=150; g=140; b=125; }
+        else if (onEdge) { r=42; g=70; b=26; }
+        else if (onPath) {
+          const base = 106 + speckle*6;
+          r = base; g = (base*0.82)|0; b = (base*0.62)|0;
         } else {
-          this.triggerEnemy();
+          if (grassCk) { r=40; g=94; b=30; }
+          else          { r=34; g=82; b=24; }
         }
+
+        r = (r + (170-r)*fog*0.5)|0;
+        g = (g + (190-g)*fog*0.5)|0;
+        b = (b + (165-b)*fog*0.5)|0;
+
+        const idx = (sy*W+sx)*4;
+        data[idx]=r; data[idx+1]=g; data[idx+2]=b; data[idx+3]=255;
       }
-    }, 45);
-  },
+    }
+    ctx.putImageData(img, 0, HORIZON);
+  }
 
-  triggerCross() {
-    const cr = CROSSINGS[Math.floor(Math.random() * CROSSINGS.length)];
-    const cl = document.getElementById('cross-label');
-    cl.textContent = '🔀 ' + cr.name;
-    cl.style.display = 'block';
+  const TREES = [];
+  for (let i=0;i<16;i++) {
+    TREES.push({ z: i/16, side: i%2===0 ? -1 : 1, col: ['#1a4a0a','#224a10','#1e4210','#254d14'][i%4] });
+  }
 
-    targetCurve = cr.targetCurve;
-    roadCurve = cr.targetCurve * 0.7;
-    renderTrail(roadCurve, playerX, roadZ);
-    SFX.swerve(1.2);
+  function drawTrees() {
+    const sorted = TREES.slice().sort((a,b)=>a.z-b.z);
+    sorted.forEach(tree => {
+      const depth    = 200 / Math.max((1-tree.z)*80, 0.5);
+      const curveOff = -currentCurve * depth * depth * 0.010 - steerX * depth * 0.55;
+      const screenX  = W/2 + tree.side * (depth*1.7 + 16) + curveOff;
+      const screenY  = HORIZON + (H-HORIZON) * tree.z;
 
-    this.setStatus(`En <strong>${cr.name}</strong> dyker upp! Vart vill ni styra hundarna?`);
+      if (screenX < -30 || screenX > W+30 || screenY > H+10) return;
 
-    const btns = cr.dirs.map((d, idx) => ({
-      t: d,
-      cls: 'pt',
-      fn: () => {
-        const chosenCurve = (idx === 0) ? cr.targetCurve : (idx === cr.dirs.length - 1 ? cr.altCurve : 0);
-        targetPlayerX = chosenCurve > 0 ? 0.45 : (chosenCurve < 0 ? -0.45 : 0);
-        this.flash(d.replace(/^[⬅➡⬆↖↗↙]\s*/, '') + '!', '#b4f59c');
-        SFX.swerve(1.4);
-        this.walk(chosenCurve);
+      const sc = 0.12 + tree.z * 0.85;
+      const bY = Math.min(screenY + 4, H);
+
+      ctx.save(); ctx.globalAlpha = 0.15 * tree.z;
+      ctx.fillStyle = '#000';
+      ctx.beginPath(); ctx.ellipse(screenX, bY, 13*sc, 4*sc, 0,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = 'rgb('+((42*sc+15)|0)+','+((30*sc+12)|0)+','+((15*sc+6)|0)+')';
+      ctx.fillRect(screenX-2*sc, bY-20*sc, 4*sc, 20*sc);
+
+      ctx.fillStyle = tree.col;
+      ctx.beginPath(); ctx.ellipse(screenX, bY-20*sc-13*sc, 14*sc, 17*sc, 0,0,Math.PI*2); ctx.fill();
+
+      if (walking) {
+        tree.z += 0.0055;
+        if (tree.z > 1.05) { tree.z = 0.01; tree.side = Math.random() > 0.5 ? 1 : -1; }
       }
+    });
+  }
+
+  let leaves = [];
+  function initLeaves() {
+    leaves = Array.from({length:10}, () => ({
+      x: Math.random()*W, y: HORIZON + Math.random()*(H-HORIZON),
+      vy: .15+Math.random()*.3, vx: -.1+Math.random()*.2,
+      sz: 2.5+Math.random()*3.5,
+      c: ['#6b4a1e','#8a6030','#7a5528'][Math.floor(Math.random()*3)],
+      r: Math.random()*360
     }));
+  }
+  function drawLeaves() {
+    leaves.forEach(l => {
+      ctx.save(); ctx.translate(l.x,l.y); ctx.rotate(l.r*Math.PI/180);
+      ctx.fillStyle = l.c;
+      ctx.beginPath(); ctx.ellipse(0,0,l.sz,l.sz*0.45,0,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+      l.y += l.vy; l.x += l.vx; l.r += 0.2;
+      if (l.y > H+5) { l.y = HORIZON-5; l.x = Math.random()*W; }
+    });
+  }
 
-    this.setBtns(btns);
-  },
+  function renderFrame() {
+    drawSky();
+    drawGroundPlane();
+    drawTrees();
+    drawLeaves();
+  }
 
-  triggerEnemy() {
-    const enemyData = getRotatedEnemy(this.lv);
-    this.en = enemyData;
+  // ============================================================
+  // MAIN LOOP
+  // ============================================================
+  let raf = null, tailT = 0, dogBob = 0, patterTick = 0;
 
-    const ed = document.getElementById('enemy3');
-    ed.textContent = enemyData.icon;
-    ed.style.display = 'block';
-    ed.className = '';
-    setTimeout(() => { ed.className = 'near'; }, 40);
+  function loop() {
+    tailT += 0.20;
+    renderFrame();
 
-    SFX.encounter();
+    const bobY = walking ? Math.sin(dogBob) * 3.2 : 0;
+    if (walking) {
+      dogBob += 0.15;
+      patterTick++;
+      if (patterTick % 9 === 0) SFX.patter();
+    }
+    const sc = 1 + (G.level - 1) * 0.10;
+    const lean = steerX * 10;
+    const xOff = steerX * 22;
+    elDogs.style.transform = `translateX(calc(-50% + ${xOff}px)) translateY(${bobY}px) scale(${Math.min(sc,1.5)}) rotate(${lean}deg)`;
 
-    let memoryNotice = '';
-    if (enemyData.encounters > 1) {
-      memoryNotice = `<span class="stance-hint">Hundarna känner igen denna ${enemyData.name}! Den har bytt taktik sedan sist.</span>`;
+    elTL.setAttribute('d', `M21 73 Q${8+Math.sin(tailT)*5} ${62+Math.cos(tailT)*3} 12 51`);
+    elTR.setAttribute('d', `M129 73 Q${142+Math.sin(tailT)*5} ${62+Math.cos(tailT)*3} 138 51`);
+
+    if (walking) {
+      const trot = Math.sin(tailT*1.3);
+      if (elLegL1) elLegL1.setAttribute('y', 87 + trot*2);
+      if (elLegR1) elLegR1.setAttribute('y', 87 - trot*2);
     }
 
-    this.setStatus(`
-      En <strong>${enemyData.name}</strong> spärrar stigen!<br>
-      "${enemyData.stance.desc}"
-      ${memoryNotice}
-    `);
+    raf = requestAnimationFrame(loop);
+  }
 
-    this.flash(`En ${enemyData.name}!`, '#ffaa44');
+  // ============================================================
+  // GAME LOGIC
+  // ============================================================
+  const G = {
+    hp:3, score:0, level:1, wins:0, phase:'idle', enemy:null,
 
-    this.setBtns([
-      { t: '🗣️ Skälla', cls: 'at', fn: () => this.act('skälla') },
-      { t: '🦘 Hoppa', cls: 'at', fn: () => this.act('hoppa') },
-      { t: '🦷 Bita', cls: 'at', fn: () => this.act('bita') }
-    ]);
-  },
+    rnd(a) { return a[Math.floor(Math.random()*a.length)]; },
+    setSt(html) { elSt.innerHTML = html; },
+    updHP() { elHp.forEach((el,i) => { el.style.opacity = i<this.hp?'1':'0.25'; el.style.transform = i<this.hp?'scale(1)':'scale(0.8)'; }); },
 
-  act(action) {
-    const en = this.en;
-    if (!en) return;
+    flash(msg, good) {
+      elFlash.style.animation = 'none'; void elFlash.offsetWidth; elFlash.style.animation = 'flashPop .2s ease-out';
+      elFlash.textContent = msg;
+      elFlash.style.color = good ? '#90ff90' : '#ff9090';
+      elFlash.style.display = 'block';
+      clearTimeout(this._ft);
+      this._ft = setTimeout(() => elFlash.style.display = 'none', 1400);
+    },
 
-    if (action === 'skälla') SFX.bark();
-    else if (action === 'hoppa') SFX.jump();
-    else if (action === 'bita') SFX.bite();
+    showBtns(arr) {
+      elBtns.innerHTML = '';
+      arr.forEach(b => {
+        const d = document.createElement('div');
+        d.className = 'gb ' + (b.cls||'');
+        d.textContent = b.label;
+        d.onclick = () => { SFX.init(); b.fn(); };
+        elBtns.appendChild(d);
+      });
+    },
 
-    const ok = en.stance.good.includes(action);
+    start() {
+      SFX.init(); SFX.victory();
+      this.hp=3; this.score=0; this.level=1; this.wins=0;
+      elLv.textContent = 1; elScore.textContent = 0;
+      elPace.textContent = PACE_NAMES[1];
+      this.updHP(); initLeaves();
+      walking = false; currentCurve = 0; targetCurve = 0; camAngle = 0;
+      steerX = 0; targetSteerX = 0;
+      if (!raf) loop();
+      this.crossPhase();
+    },
 
-    if (ok) {
-      if (EnemyMemory[en.name]) {
-        EnemyMemory[en.name].lastActionUsed = action;
+    steer(dir) {
+      targetSteerX = Math.max(-0.85, Math.min(0.85, targetSteerX + dir*0.4));
+      SFX.swerve(dir < 0 ? 0.9 : 1.15);
+    },
+
+    crossPhase() {
+      this.phase = 'walking';
+      walking = false;
+      targetSteerX = 0;
+      const cross = this.rnd(CROSSINGS);
+      elBiome.textContent = cross.icon + ' ' + cross.name;
+      elBiome.style.display = 'block';
+      this.setSt(`En <strong>${cross.name}</strong> dyker upp framför er!`);
+      this.showBtns(cross.dirs.map(d => ({
+        label: d.l, cls: 'pt',
+        fn: () => {
+          elBiome.style.display = 'none';
+          this.setSt('Hundarna travar iväg längs stigen...');
+          walking = true;
+          setCurve(d.v, true);
+          SFX.swerve(d.v > 0 ? 1.2 : d.v < 0 ? 0.85 : 1);
+          // Give the player active steering controls while walking
+          this.showBtns([
+            {label:'◀ Sväng', cls:'steer', fn:()=>this.steer(-1)},
+            {label:'🐾 Håll spåret', cls:'', fn:()=>{ targetSteerX=0; SFX.patter(); }},
+            {label:'Sväng ▶', cls:'steer', fn:()=>this.steer(1)},
+          ]);
+          setTimeout(() => {
+            walking = false;
+            this.spawnEnemy();
+          }, 1900);
+        }
+      })));
+    },
+
+    spawnEnemy() {
+      const enemyData = getRotatedEnemy(this.level);
+      this.enemy = enemyData;
+      elEnemy.textContent = enemyData.icon;
+      elEnemy.style.display = 'block';
+      elEnemy.classList.remove('near');
+      setTimeout(() => elEnemy.classList.add('near'), 80);
+      SFX.encounter();
+
+      let memNote = '';
+      if (enemyData.encounters > 1) {
+        memNote = `<span class="stance-hint">Hundarna känner igen denna ${enemyData.name} sedan tidigare!</span>`;
       }
 
-      this.sc += 35;
-      if (this.sc >= this.lv * 70) {
-        this.lv++;
-        SFX.levelUp();
-        this.flash('Nivå upp! ⭐ Hundarna ökar farten!', '#aaff88');
+      setTimeout(() => {
+        this.setSt(`En <strong>${enemyData.name}</strong> spärrar stigen!<br>${enemyData.stance.desc}${memNote}`);
+        this.fightPhase();
+      }, 900);
+    },
+
+    fightPhase() {
+      this.phase = 'fighting';
+      this.showBtns([
+        {label:'🗣 Skälla',cls:'at', fn:()=>this.attack('skälla')},
+        {label:'🦘 Hoppa', cls:'at', fn:()=>this.attack('hoppa')},
+        {label:'🦷 Bita',  cls:'at', fn:()=>this.attack('bita')},
+      ]);
+    },
+
+    attack(type) {
+      if (this.phase !== 'fighting') return;
+      this.phase = 'resolving';
+
+      if (type==='skälla') SFX.bark();
+      else if (type==='hoppa') SFX.jump();
+      else if (type==='bita') SFX.bite();
+
+      const en = this.enemy;
+      const win = en.stance.good.includes(type);
+      elEnemy.classList.remove('near');
+      setTimeout(() => elEnemy.style.display = 'none', 700);
+
+      if (win) {
+        this.wins++;
+        const pts = this.level * 10;
+        this.score += pts;
+        elScore.textContent = this.score;
+
+        if (this.wins % 2 === 0) {
+          this.level++;
+          elLv.textContent = this.level;
+          elPace.textContent = PACE_NAMES[Math.min(3,this.level)];
+          SFX.levelUp();
+          this.flash('Nivå upp! ⭐', true);
+          this.setSt(`<strong>Perfekt!</strong> ${en.stance.hint}<br><span class="stance-hint">Nivå ${this.level}! Hundarna ökar farten.</span>`);
+        } else {
+          SFX.victory();
+          this.flash(`Rätt! +${pts}p 🎉`, true);
+          this.setSt(`<strong>Bra jobbat!</strong> ${en.stance.hint}`);
+        }
       } else {
-        SFX.victory();
-        this.flash(`${en.icon} sprang iväg! +35p`, '#88ff88');
+        this.hp = Math.max(0, this.hp-1);
+        this.updHP();
+        SFX.hurt();
+        this.flash('Fel drag! 💥', false);
+        this.setSt(`${en.stance.failMsg}<br><span class="stance-hint">Ledtråd: ${en.stance.hint}</span>`);
       }
-      this.updateUI();
 
-      this.setStatus(`
-        <strong>Perfekt drag!</strong> ${en.stance.hint}
-        <span class="stance-hint">${en.name.charAt(0).toUpperCase() + en.name.slice(1)}n vek undan och stigen är fri!</span>
-      `);
+      if (this.hp <= 0) setTimeout(() => this.gameOver(), 1500);
+      else              setTimeout(() => this.crossPhase(), 1700);
+    },
 
-      document.getElementById('enemy3').style.display = 'none';
-      setTimeout(() => this.walk(), 1400);
-    } else {
-      this.hp--;
-      SFX.hurt();
-      this.updateUI();
-      this.flash('Aj! Det fungerade inte... -1🐾', '#ff6666');
-
-      if (this.hp <= 0) {
-        this.gameOver();
-      } else {
-        this.setStatus(`
-          <strong>${en.stance.failMsg}</strong><br>
-          <span class="stance-hint">Ledtråd: ${en.stance.hint}</span>
-        `);
-      }
+    gameOver() {
+      this.phase = 'idle';
+      this.setSt(`Promenaden tog slut! Nivå ${this.level} — ${this.score}p`);
+      this.flash('Spel över 🐾', false);
+      elBiome.style.display = 'none';
+      this.showBtns([{label:'🐕 Ny promenad', cls:'primary', fn:()=>this.start()}]);
     }
-  },
+  };
+  window.G = G; // expose globally so onclick="G.start()" in the HTML markup can reach it
 
-  gameOver() {
-    this.setStatus('Promenaden tog slut! Hundarna är för trötta för att fortsätta.');
-    this.flash('Spel över 🐾', '#ff4444');
-    document.getElementById('enemy3').style.display = 'none';
-    this.setBtns([{ t: '🔄 Gå ut igen', cls: 'primary', fn: () => this.start() }]);
-  }
-};
+  // ---- Keyboard steering (from v5) ----
+  window.addEventListener('keydown', (e) => {
+    if (!walking) return;
+    if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') G.steer(-1);
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') G.steer(1);
+  });
 
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-    if (G.walking) G.steer(-1);
-  } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-    if (G.walking) G.steer(1);
-  }
-});
+  // ---- Boot ----
+  initLeaves();
+  renderFrame();
 
-// Startritning
-renderTrail(0, 0, 0);
+}; // end window.onload
 </script>
 </body>
 </html>
