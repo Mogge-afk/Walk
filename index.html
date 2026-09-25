@@ -4,50 +4,71 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hundpromenaden</title>
+<meta name="description" content="An interactive dog walk adventure game where you navigate forest paths and encounters.">
+<meta property="og:title" content="Hundpromenaden">
+<meta property="og:description" content="An interactive dog walk adventure game where you navigate forest paths and encounters.">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#0a1409;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#e5f2d6;}
-#gw{width:380px;border-radius:14px;overflow:hidden;user-select:none;box-shadow:0 16px 40px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.08);background:#0f1c0d;}
-#sc{position:relative;height:240px;overflow:hidden;background:#11200f;}
-#cv{display:block;}
-#dogs-wrap{position:absolute;bottom:0;left:50%;transform:translateX(-50%);transform-origin:bottom center;transition:transform .08s ease-out;pointer-events:none;z-index:10;}
-#enemy{position:absolute;font-size:40px;top:50px;left:50%;transform:translateX(-50%) scale(0.2);display:none;transition:top .85s cubic-bezier(.18,.89,.32,1.2),transform .85s cubic-bezier(.18,.89,.32,1.2);filter:drop-shadow(0 4px 10px rgba(0,0,0,.7));z-index:5;}
-#enemy.near{top:88px;transform:translateX(-50%) scale(1.1);}
-#flash{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:700;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.95);display:none;white-space:nowrap;pointer-events:none;z-index:25;background:rgba(0,0,0,.72);padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.25);animation:flashPop .2s ease-out;}
+body{background:#070f07;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;padding:16px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#e5f2d6;}
+#gw{width:410px;max-width:100%;border-radius:16px;overflow:hidden;user-select:none;box-shadow:0 20px 50px rgba(0,0,0,0.85),0 0 0 1px rgba(255,255,255,0.1);background:#0e1a0c;position:relative;}
+#sc{position:relative;height:280px;overflow:hidden;background:#0d180b;}
+#cv{display:block;width:100%;height:100%;}
+#dogs-wrap{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);transform-origin:bottom center;transition:transform .08s ease-out;pointer-events:none;z-index:10;}
+#enemy{position:absolute;font-size:46px;top:40px;left:50%;transform:translateX(-50%) scale(0.2);display:none;transition:top .85s cubic-bezier(.18,.89,.32,1.2),transform .85s cubic-bezier(.18,.89,.32,1.2);filter:drop-shadow(0 6px 14px rgba(0,0,0,.85));z-index:5;}
+#enemy.near{top:74px;transform:translateX(-50%) scale(1.3);}
+#flash{position:absolute;top:34%;left:50%;transform:translate(-50%,-50%);font-size:15px;font-weight:700;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.95);display:none;white-space:nowrap;pointer-events:none;z-index:25;background:rgba(10,22,10,.85);padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.3);animation:flashPop .2s ease-out;box-shadow:0 4px 15px rgba(0,0,0,.6);}
 @keyframes flashPop{0%{transform:translate(-50%,-50%) scale(.85);opacity:0;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
-.hud-chip{position:absolute;background:rgba(8,18,8,.8);border:1px solid rgba(255,255,255,.18);color:#d8efbe;font-size:11px;font-weight:600;padding:3px 9px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.5);z-index:15;letter-spacing:.3px;}
-#lv-b{top:8px;left:10px;}
-#pace-b{top:8px;left:50%;transform:translateX(-50%);font-size:10px;color:#c9f59f;text-transform:uppercase;}
-#sc-b{top:8px;right:38px;}
-#snd-b{top:8px;right:10px;cursor:pointer;padding:3px 7px;font-size:12px;transition:background .15s,transform .1s;}
-#snd-b:hover{background:rgba(255,255,255,.2);}
+
+/* Top HUD bar */
+.hud-bar{position:absolute;top:8px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;z-index:15;pointer-events:none;}
+.hud-chip{background:rgba(8,18,8,.85);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.16);color:#d8efbe;font-size:11px;font-weight:600;padding:3px 8px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.5);letter-spacing:.3px;pointer-events:auto;}
+.hud-left{display:flex;gap:6px;}
+.hud-right{display:flex;gap:6px;}
+#snd-b{cursor:pointer;padding:3px 7px;font-size:12px;transition:background .15s,transform .1s;}
+#snd-b:hover{background:rgba(255,255,255,.25);}
 #snd-b:active{transform:scale(.92);}
-#biome-label{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);background:rgba(14,28,12,.88);border:1px solid #78c040;color:#e2ffd0;font-size:11px;font-weight:600;padding:3px 12px;border-radius:12px;display:none;white-space:nowrap;z-index:15;box-shadow:0 2px 10px rgba(0,0,0,.6);}
-#ui{padding:12px 14px 14px;background:#0f1c0d;border-top:1px solid rgba(255,255,255,.08);}
-#hp{display:flex;justify-content:center;align-items:center;gap:6px;margin-bottom:7px;}
+#dist-b{font-size:10.5px;color:#b2e493;}
+#treat-chip{font-size:11px;color:#ffd885;display:flex;align-items:center;gap:3px;}
+
+#biome-label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(12,25,10,.9);border:1px solid #6ab335;color:#e8ffd5;font-size:11px;font-weight:600;padding:4px 14px;border-radius:12px;display:none;white-space:nowrap;z-index:15;box-shadow:0 2px 10px rgba(0,0,0,.6);}
+
+/* UI Panel below canvas */
+#ui{padding:12px 14px 14px;background:#0d180b;border-top:1px solid rgba(255,255,255,.08);}
+#sub-hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 2px;font-size:11px;color:#8fb87e;}
+#hp{display:flex;align-items:center;gap:5px;}
 .pw{font-size:16px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));transition:opacity .25s,transform .25s;}
-#st{font-size:12.5px;line-height:1.4;color:#b8dca2;text-align:center;margin-bottom:10px;min-height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 4px;}
+#best-stat{font-size:10.5px;color:#9bbd8b;}
+
+#st{font-size:12.5px;line-height:1.42;color:#b8dca2;text-align:center;margin-bottom:10px;min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 4px;}
 #st .stance-hint{color:#ffe680;font-style:italic;font-size:11px;margin-top:2px;}
-#btns{display:flex;gap:7px;flex-wrap:wrap;}
-.gb{flex:1;min-width:72px;padding:9px 5px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.20);border-radius:8px;color:#dff0d0;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:background .12s,transform .1s;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+#st .loot-hint{color:#a4f082;font-weight:600;font-size:11px;margin-top:2px;}
+
+#btns{display:flex;gap:6px;flex-wrap:wrap;}
+.gb{flex:1;min-width:68px;padding:9px 5px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);border-radius:8px;color:#dff0d0;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:background .12s,transform .1s;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
 .gb:hover{background:rgba(255,255,255,.18);}
 .gb:active{transform:scale(.96);}
-.gb.at{background:rgba(200,55,35,.28);border-color:rgba(220,75,55,.5);color:#ffded8;}
-.gb.at:hover{background:rgba(200,55,35,.44);}
-.gb.pt{background:rgba(50,120,50,.28);border-color:rgba(70,170,70,.44);color:#e5ffd5;}
-.gb.pt:hover{background:rgba(50,120,50,.44);}
-.gb.steer{background:rgba(55,95,45,.4);border-color:rgba(90,165,75,.5);color:#d6f2c4;font-size:11px;}
-.gb.steer:hover{background:rgba(70,120,55,.55);}
-.gb.primary{background:#3b7e28;border-color:#5bb240;color:#fff;box-shadow:0 4px 14px rgba(59,126,40,.4);}
-.gb.primary:hover{background:#479632;}
+.gb .kb{font-size:9px;opacity:0.65;font-weight:normal;}
+.gb.at{background:rgba(210,60,40,.26);border-color:rgba(230,85,60,.45);color:#ffded8;}
+.gb.at:hover{background:rgba(210,60,40,.42);}
+.gb.pt{background:rgba(50,130,50,.28);border-color:rgba(70,180,70,.45);color:#e5ffd5;}
+.gb.pt:hover{background:rgba(50,130,50,.44);}
+.gb.steer{background:rgba(45,85,40,.45);border-color:rgba(80,155,70,.5);color:#d6f2c4;font-size:11px;}
+.gb.steer:hover{background:rgba(60,115,50,.6);}
+.gb.treat-btn{background:rgba(195,130,30,.25);border-color:rgba(220,160,50,.45);color:#ffebb5;}
+.gb.treat-btn:hover{background:rgba(195,130,30,.42);}
+.gb.primary{background:#3b8226;border-color:#5db73e;color:#fff;box-shadow:0 4px 14px rgba(59,130,38,.45);}
+.gb.primary:hover{background:#469b2d;}
+
+/* Controls hint */
+#shortcuts-info{font-size:10px;color:#6b8a5d;text-align:center;margin-top:10px;letter-spacing:.2px;}
 </style>
 </head>
 <body>
 <div id="gw">
   <div id="sc">
-    <canvas id="cv" width="380" height="240"></canvas>
+    <canvas id="cv" width="410" height="280"></canvas>
     <div id="dogs-wrap">
-      <svg width="150" height="115" viewBox="0 0 150 115">
+      <svg width="176" height="135" viewBox="0 0 150 115">
         <line x1="8" y1="115" x2="44" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
         <line x1="142" y1="115" x2="106" y2="58" stroke="#967d6c" stroke-width="2" opacity="0.85"/>
         <g id="dL">
@@ -61,7 +82,7 @@ body{background:#0a1409;display:flex;justify-content:center;align-items:flex-sta
           <rect id="legL4" x="57" y="87" width="7" height="17" rx="3" fill="#333"/>
           <path id="tL" d="M21 73 Q8 62 12 51" stroke="#484848" stroke-width="7" fill="none" stroke-linecap="round"/>
           <ellipse cx="44" cy="60" rx="17" ry="15" fill="#2d2d2d"/>
-          <ellipse cx="29" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(-13 29 56)"/>
+          <ellipse id="earL" cx="29" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(-13 29 56)"/>
           <ellipse cx="59" cy="56" rx="7" ry="13" fill="#1a1a1a" transform="rotate(13 59 56)"/>
           <ellipse cx="42" cy="62" rx="9" ry="8" fill="#888" opacity="0.35"/>
           <rect x="32" y="68" width="24" height="4" rx="2" fill="#d23232"/>
@@ -78,7 +99,7 @@ body{background:#0a1409;display:flex;justify-content:center;align-items:flex-sta
           <path id="tR" d="M129 73 Q142 62 138 51" stroke="#7a4828" stroke-width="7" fill="none" stroke-linecap="round"/>
           <path d="M136 55 Q142 50 139 45" stroke="#d4c8a8" stroke-width="5" fill="none" stroke-linecap="round"/>
           <ellipse cx="106" cy="60" rx="17" ry="15" fill="#6b3d1e"/>
-          <ellipse cx="91" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(-13 91 56)"/>
+          <ellipse id="earR" cx="91" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(-13 91 56)"/>
           <ellipse cx="121" cy="56" rx="7" ry="13" fill="#5a3018" transform="rotate(13 121 56)"/>
           <ellipse cx="104" cy="62" rx="9" ry="8" fill="#c8a46e" opacity="0.3"/>
           <rect x="94" y="68" width="24" height="4" rx="2" fill="#256cb5"/>
@@ -87,29 +108,39 @@ body{background:#0a1409;display:flex;justify-content:center;align-items:flex-sta
     </div>
     <div id="enemy"></div>
     <div id="flash"></div>
-    <div id="lv-b" class="hud-chip">Nivå <span id="lv">1</span></div>
-    <div id="pace-b" class="hud-chip">🌲 <span id="pace">LUNK</span></div>
-    <div id="sc-b" class="hud-chip">⭐ <span id="score">0</span></div>
-    <div id="snd-b" class="hud-chip" onclick="SFX.toggle()" title="Ljud av/på">🔊</div>
+    <div class="hud-bar">
+      <div class="hud-left">
+        <span class="hud-chip" id="lv-b">Nivå <strong id="lv">1</strong></span>
+        <span class="hud-chip" id="pace-b">🌲 <span id="pace">Lunk</span></span>
+      </div>
+      <div class="hud-right">
+        <span class="hud-chip" id="dist-b">🚶 <span id="dist">0</span> m</span>
+        <span class="hud-chip" id="sc-b">⭐ <span id="score">0</span></span>
+        <span class="hud-chip" id="snd-b" onclick="SFX.toggle()" title="Ljud av/på">🔊</span>
+      </div>
+    </div>
     <div id="biome-label"></div>
   </div>
   <div id="ui">
-    <div id="hp">
-      <span class="pw" id="h0">🐾</span><span class="pw" id="h1">🐾</span><span class="pw" id="h2">🐾</span>
+    <div id="sub-hud">
+      <div id="hp">
+        <span class="pw" id="h0">🐾</span><span class="pw" id="h1">🐾</span><span class="pw" id="h2">🐾</span>
+      </div>
+      <div id="treat-chip" title="Hundgodis kvar att kasta vid svåra möten">🦴 <span id="treat-cnt">3</span> godis</div>
+      <div id="best-stat">🏆 Rekord: <span id="best-score">0</span>p</div>
     </div>
     <div id="st">Redo att ge sig ut?</div>
-    <div id="btns"><div class="gb primary" onclick="G.start()">🐕 Börja promenaden</div></div>
+    <div id="btns"><div class="gb primary" onclick="G.start()">🐕 Börja promenaden <span class="kb">[Mellanslag]</span></div></div>
+    <div id="shortcuts-info">Styr: ◀ / ▶ eller A / D &bull; Val: 1 / 2 / 3 &bull; Godis: G</div>
   </div>
 </div>
 
 <script>
   // ============================================================
-  // SFX — Web Audio synth (from v5)
-  // Declared globally (not inside onload) so inline onclick="SFX.toggle()"
-  // in the HTML markup can reach it immediately.
+  // SFX — Web Audio synth with nature ambience & birdsong
   // ============================================================
   const SFX = {
-    ctx: null, enabled: true, lastPatter: 0,
+    ctx: null, enabled: true, lastPatter: 0, nextBirdChirp: 0,
     init() {
       if (!this.ctx) {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -142,20 +173,66 @@ body{background:#0a1409;display:flex;justify-content:center;align-items:flex-sta
     patter() {
       if (!this.enabled) return;
       const now = performance.now();
-      if (now - this.lastPatter < 160) return;
+      if (now - this.lastPatter < 150) return;
       this.lastPatter = now;
       this.init(); if (!this.ctx) return;
       try {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(90+Math.random()*20, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(85+Math.random()*25, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime+0.05);
-        gain.gain.setValueAtTime(0.065, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime+0.05);
         osc.connect(gain); gain.connect(this.ctx.destination);
         osc.start(); osc.stop(this.ctx.currentTime+0.05);
       } catch(e) {}
+    },
+    birdChirp() {
+      if (!this.enabled) return;
+      this.init(); if (!this.ctx) return;
+      try {
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        const baseF = 2100 + Math.random()*500;
+        osc.frequency.setValueAtTime(baseF, now);
+        osc.frequency.exponentialRampToValueAtTime(baseF + 400, now + 0.05);
+        osc.frequency.exponentialRampToValueAtTime(baseF - 200, now + 0.12);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.035, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.15);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(now); osc.stop(now + 0.15);
+
+        // Echo note
+        setTimeout(() => {
+          if (!this.enabled || !this.ctx) return;
+          try {
+            const t2 = this.ctx.currentTime;
+            const osc2 = this.ctx.createOscillator();
+            const gain2 = this.ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(baseF + 300, t2);
+            osc2.frequency.exponentialRampToValueAtTime(baseF + 650, t2 + 0.06);
+            gain2.gain.setValueAtTime(0.025, t2);
+            gain2.gain.exponentialRampToValueAtTime(0.0005, t2 + 0.11);
+            osc2.connect(gain2); gain2.connect(this.ctx.destination);
+            osc2.start(t2); osc2.stop(t2 + 0.11);
+          } catch(e) {}
+        }, 110);
+      } catch(e) {}
+    },
+    foundItem() {
+      [587.33, 739.99, 880.00, 1174.66].forEach((f, i) => {
+        setTimeout(() => this.tone(f, 0.12, 'triangle', 0.18), i * 70);
+      });
+    },
+    treat() {
+      [440, 554, 659].forEach((f, i) => {
+        setTimeout(() => this.tone(f, 0.1, 'sine', 0.16), i * 60);
+      });
     },
     swerve(pitchMod=1) {
       if (!this.enabled) return;
@@ -170,7 +247,7 @@ body{background:#0a1409;display:flex;justify-content:center;align-items:flex-sta
         const filter = this.ctx.createBiquadFilter();
         filter.type='lowpass'; filter.frequency.setValueAtTime(520*pitchMod, this.ctx.currentTime); filter.Q.value=2.0;
         const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime+0.18);
         noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
         noise.start();
@@ -192,37 +269,88 @@ window.onload = function() {
   // ============================================================
   const cv  = document.getElementById('cv');
   const ctx = cv.getContext('2d');
-  const W = 380, H = 240, HORIZON = 100;
+  const W = 410, H = 280, HORIZON = 92;
   cv.width = W; cv.height = H;
 
-  const elDogs  = document.getElementById('dogs-wrap');
-  const elEnemy = document.getElementById('enemy');
-  const elFlash = document.getElementById('flash');
-  const elLv    = document.getElementById('lv');
-  const elScore = document.getElementById('score');
-  const elPace  = document.getElementById('pace');
-  const elBiome = document.getElementById('biome-label');
-  const elSt    = document.getElementById('st');
-  const elBtns  = document.getElementById('btns');
-  const elHp    = [0,1,2].map(i => document.getElementById('h'+i));
-  const elTL    = document.getElementById('tL');
-  const elTR    = document.getElementById('tR');
-  const elLegL1 = document.getElementById('legL1');
-  const elLegR1 = document.getElementById('legR1');
+  const elDogs     = document.getElementById('dogs-wrap');
+  const elEnemy    = document.getElementById('enemy');
+  const elFlash    = document.getElementById('flash');
+  const elLv       = document.getElementById('lv');
+  const elScore    = document.getElementById('score');
+  const elDist     = document.getElementById('dist');
+  const elPace     = document.getElementById('pace');
+  const elTreatCnt = document.getElementById('treat-cnt');
+  const elBest     = document.getElementById('best-score');
+  const elBiome    = document.getElementById('biome-label');
+  const elSt       = document.getElementById('st');
+  const elBtns     = document.getElementById('btns');
+  const elHp       = [0,1,2].map(i => document.getElementById('h'+i));
+  const elTL       = document.getElementById('tL');
+  const elTR       = document.getElementById('tR');
+  const elLegL1    = document.getElementById('legL1');
+  const elLegR1    = document.getElementById('legR1');
+  const elEarL     = document.getElementById('earL');
+  const elEarR     = document.getElementById('earR');
+
+  // Load saved high score
+  let savedBestScore = parseInt(localStorage.getItem('hundpromenad_highscore') || '0', 10);
+  if (elBest) elBest.textContent = savedBestScore;
 
   // ============================================================
-  // GAME DATA
+  // GAME DATA & BIOMES
   // ============================================================
   const PACE_NAMES = {1:'Lugn lunk', 2:'Pigg trav', 3:'Full galopp'};
 
+  // Active biome state that changes the atmosphere, lighting and tree density
+  // 'dense_forest' = mörk trollskog med överhängande grenar & tät granskog
+  // 'open_field'   = öppen solig åker/äng med få träd, stängselstolpar och gyllene fält
+  // 'normal_forest'= klassisk svensk tall- och blandskog
+  let currentBiome = 'normal_forest';
+  let biomeBlend = {
+    darkness: 0,      // 0 = normal, 1 = deep dark forest, -0.6 = bright open field
+    treeDensity: 1.0, // 0.35 in field, 1.6 in dense forest
+    canopyArch: 0,    // 0 = none, 1 = full overhanging canopy tunnel
+    fieldGlow: 0,     // 0 = forest, 1 = golden meadow/field
+  };
+  let targetBiomeBlend = { darkness: 0, treeDensity: 1.0, canopyArch: 0, fieldGlow: 0 };
+
   const CROSSINGS = [
-    {name:'Trevägskorsning', icon:'🌲', dirs:[{l:'⬅ Vänster',v:-1},{l:'⬆ Rakt',v:0},{l:'➡ Höger',v:1}]},
-    {name:'T-korsning',      icon:'🌲', dirs:[{l:'⬅ Vänster',v:-1},{l:'➡ Höger',v:1}]},
-    {name:'Gaffelkorsning',  icon:'🌲', dirs:[{l:'↖ Skogen',v:-1},{l:'↗ Öppet fält',v:1}]},
-    {name:'Kurva',           icon:'🌿', dirs:[{l:'⬅ Sväng vänster',v:-1},{l:'➡ Sväng höger',v:1}]},
+    {
+      name:'Gaffelkorsning i trollskogen',
+      icon:'🌲',
+      dirs:[
+        { l:'↖ Djupa stigen (Mörk trollskog)', v:-1, biome:'dense_forest', desc:'Stigen slingrar in under täta, mossiga grenar där skymningen råder...' },
+        { l:'↗ Mot öppna åkern (Soligt fält)', v:1, biome:'open_field', desc:'Träden glesnar och öppnar upp mot en vidsträckt solbelyst sommaräng...' }
+      ]
+    },
+    {
+      name:'Trevägskorsning vid skogsbäcken',
+      icon:'🌿',
+      dirs:[
+        { l:'⬅ Djupa granurskogen', v:-1, biome:'dense_forest', desc:'In i den uråldriga, mörka granskogen med överhängande grenvalv...' },
+        { l:'⬆ Vanliga skogsstigen', v:0, biome:'normal_forest', desc:'Fortsätt längs den välkända tallstigen...' },
+        { l:'➡ Ut mot hagmarken', v:1, biome:'open_field', desc:'Ut mot soliga öppna betesmarker och åkerrenar...' }
+      ]
+    },
+    {
+      name:'Stigskiljet vid mossen',
+      icon:'🪵',
+      dirs:[
+        { l:'⬅ Över öppna ängarna', v:-1, biome:'open_field', desc:'Vinden fläktar friskt över de vida gräsfälten...' },
+        { l:'➡ In i trollskogens djup', v:1, biome:'dense_forest', desc:'Mörkret sluter sig tätt när träden bildar ett tak ovanför er...' }
+      ]
+    }
   ];
 
-  // Enemies with rotating stances + memory (from v5), kept in Swedish
+  // Random forest finds while trotting
+  const FOREST_FINDS = [
+    { name:'en ståtlig promenadpinne!', icon:'🪵', pts:25, msg:'Hundarna bär stolt på pinnen!' },
+    { name:'en jättelik grankotte!', icon:'🌲', pts:15, msg:'Perfekt att rulla med tassen!' },
+    { name:'en gyllene kantarell!', icon:'🍄', pts:40, msg:'Vilken nos! Ni hittade också en godis!', giveTreat:true },
+    { name:'ett mystiskt tassavtryck!', icon:'🐾', pts:20, msg:'Hundarna nosar intensivt i mossan.' },
+  ];
+
+  // Enemies with rotating stances + memory
   const ENEMY_CATALOG = [
     { icon:'🦊', name:'räv', lv:1, stances:[
       {desc:'Räven smyger lågt i slyet med spetsade öron.', hint:'Låga smygare skräms av höga rörelser och överraskande skall!', good:['skälla','hoppa'], failMsg:'Räven duckar bakom stubben! Den bryr sig inte om nafset.'},
@@ -253,7 +381,6 @@ window.onload = function() {
     ]}
   ];
 
-  // Enemy memory: same enemy rotates through its stances, doesn't repeat immediately
   const EnemyMemory = {};
   function getRotatedEnemy(level) {
     const pool = ENEMY_CATALOG.filter(e => e.lv <= level);
@@ -272,7 +399,7 @@ window.onload = function() {
   }
 
   // ============================================================
-  // MODE-7 FOREST PATH RENDERER (kept as-is from v4 — this is the good one)
+  // MODE-7 FOREST PATH & GRAPHICS
   // ============================================================
   let targetCurve  = 0;
   let currentCurve = 0;
@@ -280,9 +407,9 @@ window.onload = function() {
   let scroll       = 0;
   let walking      = false;
   let returnTimer  = null;
+  let distanceM    = 0;
 
-  // Active steering while walking (from v5) — nudges the curve target
-  let steerX = 0;       // -1..1, player's lateral steering input
+  let steerX = 0;
   let targetSteerX = 0;
 
   const ROWS = H - HORIZON;
@@ -293,76 +420,277 @@ window.onload = function() {
     targetCurve = v;
     if (autoReturn && v !== 0) {
       clearTimeout(returnTimer);
-      returnTimer = setTimeout(() => { targetCurve = 0; }, 1700);
+      returnTimer = setTimeout(() => { targetCurve = 0; }, 1800);
     }
+  }
+
+  // ------------------------------------------------------------
+  // BACKGROUND: Layered Nordic Horizon with Biome Lighting
+  // ------------------------------------------------------------
+  // Precompute horizon spires for realistic distant conifers
+  const HORIZON_POINTS_FAR = [];
+  const HORIZON_POINTS_NEAR = [];
+  for (let i = 0; i < 180; i++) {
+    HORIZON_POINTS_FAR.push({
+      h: 9 + Math.sin(i * 0.28) * 4 + (i % 3 === 0 ? 5 : 0) + (i % 7 === 0 ? 7 : 0),
+      w: 4 + (i % 4)
+    });
+    HORIZON_POINTS_NEAR.push({
+      h: 14 + Math.sin(i * 0.19 + 1.2) * 6 + (i % 2 === 0 ? 6 : 0) + (i % 5 === 0 ? 9 : 0),
+      w: 5 + (i % 3) * 2
+    });
+  }
+
+  function updateBiomeTransition() {
+    // Smooth interpolation towards current biome target
+    const rate = 0.035;
+    biomeBlend.darkness   += (targetBiomeBlend.darkness   - biomeBlend.darkness) * rate;
+    biomeBlend.treeDensity += (targetBiomeBlend.treeDensity - biomeBlend.treeDensity) * rate;
+    biomeBlend.canopyArch += (targetBiomeBlend.canopyArch - biomeBlend.canopyArch) * rate;
+    biomeBlend.fieldGlow  += (targetBiomeBlend.fieldGlow  - biomeBlend.fieldGlow) * rate;
   }
 
   function drawSky() {
-    const sg = ctx.createLinearGradient(0,0,0,HORIZON);
-    sg.addColorStop(0,'#8fb0d8');
-    sg.addColorStop(1,'#bcd9a8');
-    ctx.fillStyle = sg;
-    ctx.fillRect(0,0,W,HORIZON);
+    updateBiomeTransition();
 
-    ctx.fillStyle = '#183a10';
-    ctx.fillRect(0, HORIZON-22, W, 26);
-    const off = ((camAngle * 80) % 26 + 26) % 26;
-    for (let x = -26; x < W+26; x += 26) {
-      const xx = x + off;
-      const hh = 12 + Math.sin(xx*0.18)*5 + Math.cos(xx*0.4)*4;
-      ctx.fillStyle = '#132c0b';
-      ctx.fillRect(xx, HORIZON-22-hh, 24, hh+3);
+    // Atmospheric Nordic sky gradient influenced by biome
+    const dark = biomeBlend.darkness;
+    const field = biomeBlend.fieldGlow;
+
+    // Top sky color: from twilight deep indigo in dark forest to bright cyan in open fields
+    const r1 = Math.max(15, Math.min(255, Math.round(88 - dark * 55 + field * 40)));
+    const g1 = Math.max(25, Math.min(255, Math.round(136 - dark * 80 + field * 35)));
+    const b1 = Math.max(45, Math.min(255, Math.round(181 - dark * 95 + field * 30)));
+
+    // Horizon sky color: from deep shadowy moss tint to glowing sunny golden haze
+    const r2 = Math.max(10, Math.min(255, Math.round(182 - dark * 115 + field * 50)));
+    const g2 = Math.max(25, Math.min(255, Math.round(215 - dark * 125 + field * 25)));
+    const b2 = Math.max(20, Math.min(255, Math.round(164 - dark * 110 - field * 40)));
+
+    const sg = ctx.createLinearGradient(0, 0, 0, HORIZON);
+    sg.addColorStop(0, `rgb(${r1},${g1},${b1})`);
+    sg.addColorStop(0.55, `rgb(${Math.round(r1*0.6+r2*0.4)},${Math.round(g1*0.6+g2*0.4)},${Math.round(b1*0.6+b2*0.4)})`);
+    sg.addColorStop(1, `rgb(${r2},${g2},${b2})`);
+    ctx.fillStyle = sg;
+    ctx.fillRect(0, 0, W, HORIZON);
+
+    // Warm sun glow - brighter in field, dimmed to an eerie moon/canopy glimmer in dark forest
+    const sunAlpha = Math.max(0.04, 0.45 * (1 - dark * 0.8) + field * 0.25);
+    const sunX = W * 0.72 + Math.sin(camAngle * 0.2) * 15;
+    const sunG = ctx.createRadialGradient(sunX, 26, 4, sunX, 26, 85 + field * 30);
+    sunG.addColorStop(0, `rgba(255, 248, 205, ${sunAlpha})`);
+    sunG.addColorStop(0.35, `rgba(255, 230, 160, ${sunAlpha * 0.4})`);
+    sunG.addColorStop(1, 'rgba(255, 220, 140, 0)');
+    ctx.fillStyle = sunG;
+    ctx.fillRect(0, 0, W, HORIZON);
+
+    // Sunbeams / god rays through trees (or wide open field rays)
+    if (sunAlpha > 0.1) {
+      ctx.save();
+      ctx.globalAlpha = 0.07 * (1 - dark * 0.5) + field * 0.05;
+      ctx.fillStyle = '#fffdf0';
+      ctx.beginPath();
+      ctx.moveTo(sunX, 26);
+      ctx.lineTo(sunX - 160, HORIZON);
+      ctx.lineTo(sunX - 80, HORIZON);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(sunX, 26);
+      ctx.lineTo(sunX - 40, HORIZON);
+      ctx.lineTo(sunX + 60, HORIZON);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
-    ctx.save(); ctx.globalAlpha = 0.10; ctx.fillStyle = '#fff8d8';
-    ctx.beginPath(); ctx.ellipse(W*0.5, 20, 120, 40, 0, 0, Math.PI*2); ctx.fill();
-    ctx.restore();
+
+    // 1. Distant towering mountain / castle ridge (brought much closer and taller)
+    const hillPan = (camAngle * 25) % W;
+    const hillDark = Math.round(57 - dark * 30 + field * 25);
+    const hillGreen = Math.round(91 - dark * 45 + field * 20);
+    const hillBlue = Math.round(78 - dark * 40 - field * 10);
+    ctx.fillStyle = `rgb(${hillDark},${hillGreen},${hillBlue})`;
+    ctx.beginPath();
+    ctx.moveTo(0, HORIZON);
+    for (let x = -20; x <= W + 20; x += 15) {
+      const rx = x + hillPan;
+      // High dramatic peak in the background
+      const wave = field > 0.4 ? Math.sin(rx * 0.009) * 14 : Math.sin(rx * 0.012) * 22 + Math.cos(rx * 0.025) * 12;
+      const hy = HORIZON - 48 - wave;
+      ctx.lineTo(x, hy);
+    }
+    ctx.lineTo(W, HORIZON);
+    ctx.closePath();
+    ctx.fill();
+
+    // Distant tower / ruined castle silhouette on the hill peak (just like reference image!)
+    const towerPeakX = ((W * 0.52 + hillPan) % W + W) % W;
+    const towerY = HORIZON - 66;
+    ctx.fillStyle = `rgb(${Math.max(20, hillDark - 12)}, ${Math.max(25, hillGreen - 15)}, ${Math.max(25, hillBlue - 10)})`;
+    ctx.fillRect(towerPeakX - 8, towerY, 16, 26);
+    // Battlements
+    ctx.fillRect(towerPeakX - 9, towerY - 3, 5, 4);
+    ctx.fillRect(towerPeakX + 4, towerY - 3, 5, 4);
+    // Window slit
+    ctx.fillStyle = '#162319';
+    ctx.fillRect(towerPeakX - 1.5, towerY + 8, 3, 6);
+
+    // 2. Mid-distance forest or field hedgerow (taller and closer)
+    const farPan = ((camAngle * 55) % 180 + 180) % 180;
+    const fR = Math.max(8, Math.round(34 - dark * 22 + field * 25));
+    const fG = Math.max(14, Math.round(67 - dark * 38 + field * 20));
+    const fB = Math.max(8, Math.round(42 - dark * 26));
+    ctx.fillStyle = `rgb(${fR},${fG},${fB})`;
+    ctx.beginPath();
+    ctx.moveTo(0, HORIZON);
+    let curX = -10;
+    let idx = Math.floor(farPan);
+    while (curX < W + 15) {
+      const p = HORIZON_POINTS_FAR[idx % HORIZON_POINTS_FAR.length];
+      const hScale = field > 0.4 ? 0.65 : 1.35;
+      const apexY = HORIZON - (p.h * hScale) - 14;
+      ctx.lineTo(curX + p.w * 0.5, apexY);
+      ctx.lineTo(curX + p.w, HORIZON - 6);
+      curX += p.w;
+      idx++;
+    }
+    ctx.lineTo(W, HORIZON);
+    ctx.closePath();
+    ctx.fill();
+
+    // 3. Near horizon conifer line (taller, sharper spruce spires)
+    if (field < 0.85) {
+      const nearPan = ((camAngle * 85) % 180 + 180) % 180;
+      const nR = Math.max(4, Math.round(19 - dark * 14));
+      const nG = Math.max(10, Math.round(44 - dark * 26));
+      const nB = Math.max(6, Math.round(22 - dark * 14));
+      ctx.fillStyle = `rgb(${nR},${nG},${nB})`;
+      ctx.beginPath();
+      ctx.moveTo(0, HORIZON);
+      curX = -10;
+      idx = Math.floor(nearPan);
+      while (curX < W + 15) {
+        const p = HORIZON_POINTS_NEAR[idx % HORIZON_POINTS_NEAR.length];
+        const hMul = 1.3 + dark * 0.5 - field * 0.6;
+        const apexY = HORIZON - (p.h * hMul) - 10;
+        ctx.lineTo(curX + p.w * 0.5, apexY);
+        ctx.lineTo(curX + p.w, HORIZON);
+        curX += p.w;
+        idx++;
+      }
+      ctx.lineTo(W, HORIZON);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // 4. Soft horizon mist
+    const mistG = ctx.createLinearGradient(0, HORIZON - 14, 0, HORIZON + 8);
+    const mistAlpha = 0.35 + dark * 0.25 - field * 0.2;
+    mistG.addColorStop(0, 'rgba(185, 215, 180, 0)');
+    mistG.addColorStop(0.65, `rgba(${Math.round(185-dark*80)}, ${Math.round(215-dark*80)}, ${Math.round(180-dark*60)}, ${mistAlpha})`);
+    mistG.addColorStop(1, 'rgba(185, 215, 180, 0.12)');
+    ctx.fillStyle = mistG;
+    ctx.fillRect(0, HORIZON - 14, W, 22);
   }
 
+  // ------------------------------------------------------------
+  // GROUND PLANE (Mode-7 Trail with gravel, moss & biome ground)
+  // ------------------------------------------------------------
   function drawGroundPlane() {
-    const PATH_HALF = 1.15;
+    // Widen path so dogs and player have a broad, clear view ahead
+    const PATH_HALF = 1.35;
 
     currentCurve += (targetCurve - currentCurve) * 0.045;
-    // Active steering blends into the curve calculation
     steerX += (targetSteerX - steerX) * 0.08;
-    camAngle     -= currentCurve * 0.0012;
-    if (walking) scroll += 0.065;
+    camAngle -= currentCurve * 0.0012;
+
+    if (walking) {
+      scroll += 0.07;
+      distanceM += 0.45;
+      if (elDist) elDist.textContent = Math.floor(distanceM);
+
+      // Random birdsong in the forest
+      if (performance.now() > SFX.nextBirdChirp) {
+        SFX.birdChirp();
+        SFX.nextBirdChirp = performance.now() + 5000 + Math.random() * 8000;
+      }
+    }
 
     const img  = ctx.createImageData(W, ROWS);
     const data = img.data;
 
+    const dark = biomeBlend.darkness;
+    const field = biomeBlend.fieldGlow;
+
     for (let sy = 0; sy < ROWS; sy++) {
       const z = depthLUT[sy];
-      const curveX  = -currentCurve * z * z * 0.010 - steerX * z * 0.55;
+      const curveX  = -currentCurve * z * z * 0.009 - steerX * z * 0.55;
       const wz_base = z + scroll;
-      const fog = z > 50 ? 1 : z / 50;
+      const fog = z > 55 ? 1 : z / 55;
 
       for (let sx = 0; sx < W; sx++) {
         const wx = (sx - W*0.5) * z / 200 + curveX;
         const wz = wz_base;
 
         const absWx  = wx < 0 ? -wx : wx;
-        const onPath = absWx < PATH_HALF;
-        const onEdge = absWx >= PATH_HALF - 0.12 && absWx < PATH_HALF + 0.20;
+        // Stepped trail edge like the cobblestone/dirt path in the reference
+        const edgeStep = (Math.sin(wz * 3.8) * 0.08 + Math.cos(wz * 1.5) * 0.04);
+        const dynamicPathHalf = PATH_HALF + edgeStep;
+        const onPath = absWx < dynamicPathHalf;
+        const onEdge = absWx >= dynamicPathHalf - 0.16 && absWx < dynamicPathHalf + 0.26;
 
         const speckle = (((wx*7)|0) ^ ((wz*3)|0)) & 3;
+        const brickNoise = (((wx*3.5)|0) ^ ((wz*1.8)|0)) & 1;
         const grassCk = (((wx*1.3)|0) + ((wz*0.45)|0)) % 2 === 0;
         const stoneNoise = (((wx*11.3+wz*6.1)|0) % 97);
         const onStone = onPath && stoneNoise === 3 && z < 40;
 
         let r,g,b;
-        if (onStone) { r=150; g=140; b=125; }
-        else if (onEdge) { r=42; g=70; b=26; }
-        else if (onPath) {
-          const base = 106 + speckle*6;
-          r = base; g = (base*0.82)|0; b = (base*0.62)|0;
+        if (onStone) {
+          r = Math.round(165 - dark * 60 + field * 20);
+          g = Math.round(155 - dark * 60 + field * 20);
+          b = Math.round(140 - dark * 55 + field * 15);
+        } else if (onEdge) {
+          // Lush path border shoulder (vivid grassy verge)
+          r = Math.round(48 - dark * 20 + field * 40);
+          g = Math.round(88 - dark * 32 + field * 45);
+          b = Math.round(32 - dark * 14 + field * 18);
+        } else if (onPath) {
+          // Rich textured earthen trail with warm amber/brown hues like the reference image
+          const base = 126 + speckle*6 + brickNoise*8 - dark * 50 + field * 25;
+          r = Math.round(base);
+          g = Math.round(base * 0.78);
+          b = Math.round(base * (0.54 + field * 0.08));
         } else {
-          if (grassCk) { r=40; g=94; b=30; }
-          else          { r=34; g=82; b=24; }
+          // Surrounding grass ground:
+          if (field > 0.4) {
+            // Open meadow / grain field
+            const flower = (((wx*5.2 + wz*4.7)|0) % 43) === 0;
+            if (flower) {
+              r = 230; g = 210; b = 80;
+            } else if (grassCk) {
+              r = 95 + speckle*6; g = 145 + speckle*5; b = 45;
+            } else {
+              r = 85 + speckle*5; g = 135 + speckle*4; b = 38;
+            }
+          } else {
+            // Vivid green grass shoulder along the path like in the reference image
+            const dR = Math.round(44 - dark * 24);
+            const dG = Math.round(112 - dark * 58);
+            const dB = Math.round(36 - dark * 20);
+            if (grassCk) { r = dR; g = dG; b = dB; }
+            else          { r = Math.max(14, dR - 8); g = Math.max(26, dG - 16); b = Math.max(12, dB - 8); }
+          }
         }
 
-        r = (r + (170-r)*fog*0.5)|0;
-        g = (g + (190-g)*fog*0.5)|0;
-        b = (b + (165-b)*fog*0.5)|0;
+        // Distance fog smoothly tints towards sky/mist color
+        const fogR = Math.round(160 - dark * 85 + field * 30);
+        const fogG = Math.round(188 - dark * 95 + field * 20);
+        const fogB = Math.round(160 - dark * 85 - field * 20);
+
+        r = (r + (fogR - r)*fog*0.48)|0;
+        g = (g + (fogG - g)*fog*0.48)|0;
+        b = (b + (fogB - b)*fog*0.48)|0;
 
         const idx = (sy*W+sx)*4;
         data[idx]=r; data[idx+1]=g; data[idx+2]=b; data[idx+3]=255;
@@ -371,49 +699,385 @@ window.onload = function() {
     ctx.putImageData(img, 0, HORIZON);
   }
 
+  // ------------------------------------------------------------
+  // ROADSIDE 3D TREES, FENCE POSTS & UNDERGROWTH
+  // Rich spruce forest lining the path edge with ferns, rocks and thick greenery
+  // ------------------------------------------------------------
+  // 24 trees with clean linear distribution along the road shoulders
   const TREES = [];
-  for (let i=0;i<16;i++) {
-    TREES.push({ z: i/16, side: i%2===0 ? -1 : 1, col: ['#1a4a0a','#224a10','#1e4210','#254d14'][i%4] });
+  for (let i = 0; i < 24; i++) {
+    // Alternate left and right side cleanly
+    const side = (i % 2 === 0) ? -1 : 1;
+    // Layering: outer forest backdrop every 3rd tree, roadside border for the rest
+    const isBackdrop = (i % 3 === 0);
+    TREES.push({
+      z: (i + 0.5) / 24,
+      side: side,
+      type: (i % 4 === 1) ? 'buske' : 'gran',
+      // Roadside edge is offset 1.25 - 1.35; backdrop is offset 1.60 - 1.85 so path center is wide open
+      offset: isBackdrop ? 1.70 : 1.28,
+      swaySeed: (i * 1.37) % (Math.PI * 2),
+      scaleVar: 0.95 + ((i * 3) % 4) * 0.05
+    });
   }
 
-  function drawTrees() {
-    const sorted = TREES.slice().sort((a,b)=>a.z-b.z);
-    sorted.forEach(tree => {
-      const depth    = 200 / Math.max((1-tree.z)*80, 0.5);
-      const curveOff = -currentCurve * depth * depth * 0.010 - steerX * depth * 0.55;
-      const screenX  = W/2 + tree.side * (depth*1.7 + 16) + curveOff;
-      const screenY  = HORIZON + (H-HORIZON) * tree.z;
+  // Stylized rich conifer / spruce inspired by vibrant adventure art:
+  // - Dark crisp stylized outline & shaded boughs
+  // - Vivid pine needles with bright highlights
+  // - 6 dense tiered boughs creating a majestic, lush evergreen wall
+  function drawSpruceTree(screenX, bY, sc, sway, isDarkForest) {
+    // 1. Trunk (warm sturdy timber with root flare and shadow)
+    const trunkW = 4.2 * sc;
+    const trunkH = 28 * sc;
+    ctx.fillStyle = isDarkForest ? '#180c05' : '#2b160a';
+    ctx.beginPath();
+    ctx.moveTo(screenX - trunkW * 0.9, bY);
+    ctx.lineTo(screenX - trunkW * 0.55, bY - trunkH);
+    ctx.lineTo(screenX + trunkW * 0.55, bY - trunkH);
+    ctx.lineTo(screenX + trunkW * 0.9, bY);
+    ctx.closePath();
+    ctx.fill();
 
-      if (screenX < -30 || screenX > W+30 || screenY > H+10) return;
+    // Trunk highlight
+    ctx.fillStyle = isDarkForest ? '#331c10' : '#4d2d18';
+    ctx.fillRect(screenX - trunkW * 0.15, bY - trunkH, trunkW * 0.35, trunkH);
 
-      const sc = 0.12 + tree.z * 0.85;
-      const bY = Math.min(screenY + 4, H);
+    // 2. Six lush, dense conifer tiers with jagged needle fringe
+    const tiers = [
+      { yOff: -14*sc, w: 44*sc, h: 26*sc, dark:'#0b2611', mid:'#13421e', lit:'#226630', topLit:'#328842' },
+      { yOff: -28*sc, w: 38*sc, h: 25*sc, dark:'#0e2e15', mid:'#174d23', lit:'#287337', topLit:'#3aa04d' },
+      { yOff: -42*sc, w: 32*sc, h: 24*sc, dark:'#113819', mid:'#1d5c2b', lit:'#2f8541', topLit:'#44b55a' },
+      { yOff: -56*sc, w: 25*sc, h: 22*sc, dark:'#14411e', mid:'#226932', lit:'#36964a', topLit:'#4ec467' },
+      { yOff: -70*sc, w: 18*sc, h: 20*sc, dark:'#174a22', mid:'#277739', lit:'#3da753', topLit:'#5ad475' },
+      { yOff: -84*sc, w: 10*sc, h: 22*sc, dark:'#1b5327', mid:'#2d8741', lit:'#44bc5d', topLit:'#68e483' },
+    ];
 
-      ctx.save(); ctx.globalAlpha = 0.15 * tree.z;
-      ctx.fillStyle = '#000';
-      ctx.beginPath(); ctx.ellipse(screenX, bY, 13*sc, 4*sc, 0,0,Math.PI*2); ctx.fill();
-      ctx.restore();
+    tiers.forEach((t, i) => {
+      const tierSway = sway * (i + 1) * 0.45;
+      const topY = bY + t.yOff - t.h;
+      const botY = bY + t.yOff;
+      const peakX = screenX + tierSway;
 
-      ctx.fillStyle = 'rgb('+((42*sc+15)|0)+','+((30*sc+12)|0)+','+((15*sc+6)|0)+')';
-      ctx.fillRect(screenX-2*sc, bY-20*sc, 4*sc, 20*sc);
+      // Tier shadow / base
+      ctx.fillStyle = isDarkForest ? '#051408' : t.dark;
+      ctx.beginPath();
+      ctx.moveTo(peakX, topY);
+      ctx.lineTo(screenX - t.w * 0.52, botY);
+      ctx.lineTo(screenX + t.w * 0.52, botY);
+      ctx.closePath();
+      ctx.fill();
 
-      ctx.fillStyle = tree.col;
-      ctx.beginPath(); ctx.ellipse(screenX, bY-20*sc-13*sc, 14*sc, 17*sc, 0,0,Math.PI*2); ctx.fill();
+      // Main left boughs (shaded deep evergreen)
+      ctx.fillStyle = isDarkForest ? t.dark : t.mid;
+      ctx.beginPath();
+      ctx.moveTo(peakX, topY);
+      ctx.lineTo(screenX - t.w * 0.5, botY);
+      // Serrated bough needles
+      ctx.lineTo(screenX - t.w * 0.35, botY - 3*sc);
+      ctx.lineTo(screenX - t.w * 0.20, botY);
+      ctx.lineTo(screenX, botY - 3*sc);
+      ctx.closePath();
+      ctx.fill();
 
-      if (walking) {
-        tree.z += 0.0055;
-        if (tree.z > 1.05) { tree.z = 0.01; tree.side = Math.random() > 0.5 ? 1 : -1; }
+      // Main right boughs (sunlit pine needles)
+      ctx.fillStyle = isDarkForest ? t.mid : t.lit;
+      ctx.beginPath();
+      ctx.moveTo(peakX, topY);
+      ctx.lineTo(screenX, botY - 3*sc);
+      ctx.lineTo(screenX + t.w * 0.20, botY);
+      ctx.lineTo(screenX + t.w * 0.35, botY - 3*sc);
+      ctx.lineTo(screenX + t.w * 0.5, botY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Top ridge highlight (crisp vibrant edge)
+      if (!isDarkForest) {
+        ctx.fillStyle = t.topLit;
+        ctx.beginPath();
+        ctx.moveTo(peakX, topY);
+        ctx.lineTo(peakX + 1.8*sc, topY + 4*sc);
+        ctx.lineTo(screenX + t.w * 0.38, botY - 2*sc);
+        ctx.lineTo(screenX + t.w * 0.30, botY - 4*sc);
+        ctx.closePath();
+        ctx.fill();
       }
     });
   }
 
+  // Tall Swedish pine (Furu) with high umbrella crown
+  function drawPineTree(screenX, bY, sc, sway, isDarkForest) {
+    // Tall amber-red bark
+    ctx.fillStyle = isDarkForest ? '#4a2610' : '#78431e';
+    ctx.fillRect(screenX - 2.6*sc, bY - 68*sc, 5.2*sc, 68*sc);
+    ctx.fillStyle = isDarkForest ? '#663618' : '#9e5a2b';
+    ctx.fillRect(screenX, bY - 68*sc, 2.2*sc, 68*sc);
+
+    // Bare branches sticking out under the crown
+    ctx.fillStyle = '#422411';
+    ctx.beginPath();
+    ctx.moveTo(screenX - 2*sc, bY - 48*sc);
+    ctx.lineTo(screenX - 11*sc, bY - 54*sc);
+    ctx.lineTo(screenX - 2*sc, bY - 50*sc);
+    ctx.moveTo(screenX + 2*sc, bY - 42*sc);
+    ctx.lineTo(screenX + 12*sc, bY - 46*sc);
+    ctx.lineTo(screenX + 2*sc, bY - 44*sc);
+    ctx.fill();
+
+    // Dense crown needle clusters
+    const tufts = [
+      { dx: -12*sc, y: bY - 58*sc, rx: 14*sc, ry: 10*sc,   col: isDarkForest ? '#183815' : '#22501b' },
+      { dx:  13*sc, y: bY - 62*sc, rx: 15*sc, ry: 10.5*sc, col: isDarkForest ? '#1d4218' : '#2b6321' },
+      { dx:   1*sc + sway*1.4, y: bY - 74*sc, rx: 17*sc, ry: 12*sc, col: isDarkForest ? '#224d1d' : '#36782a' },
+    ];
+    tufts.forEach(tf => {
+      ctx.fillStyle = tf.col;
+      ctx.beginPath();
+      ctx.ellipse(screenX + tf.dx, tf.y, tf.rx, tf.ry, 0, 0, Math.PI*2);
+      ctx.fill();
+    });
+  }
+
+  // Meadow wooden fence post with wire (Gärdsgård / Stängselstolpe i hagen)
+  function drawFencePost(screenX, bY, sc, side) {
+    // Weathered wooden fence post
+    ctx.fillStyle = '#6d5a49';
+    ctx.fillRect(screenX - 2.2*sc, bY - 26*sc, 4.4*sc, 26*sc);
+    ctx.fillStyle = '#8f7964';
+    ctx.fillRect(screenX - 0.7*sc, bY - 26*sc, 1.8*sc, 26*sc);
+
+    // Horizontal fence rails
+    ctx.fillStyle = '#544638';
+    ctx.fillRect(screenX - 22*sc * side, bY - 20*sc, 22*sc * side, 2.2*sc);
+    ctx.fillRect(screenX - 22*sc * side, bY - 10*sc, 22*sc * side, 2.0*sc);
+
+    // Tall wildflower grass bunch at base
+    ctx.fillStyle = '#78a83a';
+    ctx.beginPath();
+    ctx.ellipse(screenX, bY - 2*sc, 7*sc, 5*sc, 0, 0, Math.PI*2);
+    ctx.fill();
+    // Wildflowers
+    ctx.fillStyle = '#5577dd';
+    ctx.fillRect(screenX - 3*sc, bY - 8*sc, 2.2*sc, 2.2*sc);
+    ctx.fillStyle = '#f5dd42';
+    ctx.fillRect(screenX + 3*sc, bY - 7*sc, 2.2*sc, 2.2*sc);
+  }
+
+  // Roadside Fern / Bush clump (Ormbunke & Skogsbuske)
+  // Matching the lush roadside vegetation from the reference image
+  function drawForestBush(screenX, bY, sc, isDarkForest) {
+    // 1. Mossy boulder
+    ctx.fillStyle = isDarkForest ? '#242922' : '#454c42';
+    ctx.beginPath();
+    ctx.ellipse(screenX - 6*sc, bY - 2*sc, 10*sc, 5.5*sc, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#2d5e24';
+    ctx.beginPath();
+    ctx.ellipse(screenX - 6*sc, bY - 4.8*sc, 7.5*sc, 3*sc, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // 2. Lush roadside Fern fronds (Ormbunkar längs dikesrenen)
+    const frondColors = isDarkForest ? ['#0d2b12','#143c1a','#1b4d21'] : ['#1d5926','#2b7a36','#3ba14a'];
+    const angles = [-0.65, -0.35, 0, 0.35, 0.65];
+
+    angles.forEach((ang, idx) => {
+      ctx.save();
+      ctx.translate(screenX + 3*sc, bY - 2*sc);
+      ctx.rotate(ang);
+      ctx.fillStyle = frondColors[idx % frondColors.length];
+      ctx.beginPath();
+      ctx.ellipse(0, -11*sc, 3.8*sc, 11*sc, 0, 0, Math.PI*2);
+      ctx.fill();
+      // Frond tip highlight
+      if (!isDarkForest) {
+        ctx.fillStyle = '#52c264';
+        ctx.beginPath();
+        ctx.ellipse(0, -18*sc, 2.2*sc, 3.5*sc, 0, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+  }
+
+  // ------------------------------------------------------------
+  // DENSE TROLLSKOG CANOPY (Branches arching across the path)
+  // ------------------------------------------------------------
+  let canopySwayTime = 0;
+  function drawOverhangingCanopy() {
+    if (biomeBlend.canopyArch < 0.05) return;
+    canopySwayTime += 0.02;
+
+    const arch = biomeBlend.canopyArch;
+    ctx.save();
+    ctx.globalAlpha = Math.min(1.0, arch * 0.95);
+
+    const swayL = Math.sin(canopySwayTime) * 6;
+    const swayR = Math.sin(canopySwayTime + 1.5) * 6;
+
+    // 1. Heavy gnarled spruce branches sweeping in from the left over the trail
+    ctx.fillStyle = '#140c06';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(W * 0.55 + swayL, 38);
+    ctx.lineTo(W * 0.42 + swayL, 52);
+    ctx.lineTo(0, 75);
+    ctx.closePath();
+    ctx.fill();
+
+    // Dark drooping spruce needles forming a ceiling
+    ctx.fillStyle = '#0a1d0d';
+    ctx.beginPath();
+    ctx.moveTo(-10, 0);
+    ctx.lineTo(W * 0.65 + swayL, 20);
+    ctx.lineTo(W * 0.50 + swayL, 62);
+    ctx.lineTo(W * 0.32 + swayL, 56);
+    ctx.lineTo(W * 0.20, 80);
+    ctx.lineTo(-10, 110);
+    ctx.closePath();
+    ctx.fill();
+
+    // 2. Arching branches from the right interlocking in the middle
+    ctx.fillStyle = '#100a05';
+    ctx.beginPath();
+    ctx.moveTo(W, 0);
+    ctx.lineTo(W * 0.40 + swayR, 28);
+    ctx.lineTo(W * 0.52 + swayR, 46);
+    ctx.lineTo(W, 65);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#0d2411';
+    ctx.beginPath();
+    ctx.moveTo(W + 10, 0);
+    ctx.lineTo(W * 0.35 + swayR, 18);
+    ctx.lineTo(W * 0.48 + swayR, 58);
+    ctx.lineTo(W * 0.70, 70);
+    ctx.lineTo(W + 10, 100);
+    ctx.closePath();
+    ctx.fill();
+
+    // Hanging Spanish moss / Skägglav wisps
+    ctx.strokeStyle = 'rgba(40, 70, 45, 0.75)';
+    ctx.lineWidth = 1.8;
+    for (let x = 60; x < W - 60; x += 35) {
+      const len = 18 + ((x * 7) % 24);
+      const startY = 32 + Math.sin(x * 0.05) * 12;
+      ctx.beginPath();
+      ctx.moveTo(x, startY);
+      ctx.quadraticCurveTo(x + Math.sin(canopySwayTime + x)*5, startY + len*0.6, x - 2, startY + len);
+      ctx.stroke();
+    }
+
+    // Vignette / tunnel shadow at the edges
+    const tunnelGrad = ctx.createRadialGradient(W*0.5, H*0.48, 80, W*0.5, H*0.48, 220);
+    tunnelGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    tunnelGrad.addColorStop(0.7, 'rgba(3,10,4,0.35)');
+    tunnelGrad.addColorStop(1, 'rgba(2,8,3,0.75)');
+    ctx.fillStyle = tunnelGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.restore();
+  }
+
+  let windTime = 0;
+  function drawTrees() {
+    windTime += 0.035;
+    const isDark = biomeBlend.darkness > 0.4;
+    const isField = biomeBlend.fieldGlow > 0.4;
+
+    const sorted = TREES.slice().sort((a,b) => a.z - b.z);
+
+    sorted.forEach((tree, idx) => {
+      // If we are in an open field, cull 60% of large trees so it feels wide & open!
+      if (isField && (idx % 3 !== 0) && tree.type !== 'buske') {
+        const depth = 200 / Math.max((1 - tree.z) * 75, 0.5);
+        const curveOff = -currentCurve * depth * depth * 0.009 - steerX * depth * 0.55;
+        const screenX = W/2 + tree.side * (depth * 1.55 * tree.offset + 10) + curveOff;
+        const screenY = HORIZON + (H - HORIZON) * tree.z;
+        if (screenX >= -40 && screenX <= W + 40 && screenY <= H + 20) {
+          const sc = (0.20 + tree.z * 1.30) * tree.scaleVar;
+          const bY = Math.min(screenY + 4, H);
+          drawFencePost(screenX, bY, sc, tree.side);
+        }
+        if (walking) {
+          tree.z += 0.0065;
+          if (tree.z > 1.05) { tree.z = 0.01; }
+        }
+        return;
+      }
+
+      // Ground projection for tree base:
+      // In the reference image, the road has clear green shoulders (offset 1.02 to 1.15)
+      // and the trees are tall, looming right at the border of the path
+      const depth = 200 / Math.max((1 - tree.z) * 75, 0.5);
+      const curveOff = -currentCurve * depth * depth * 0.009 - steerX * depth * 0.55;
+
+      // Distance from trail center:
+      // In the user's screenshot, trees were standing in the middle of the trail.
+      // Now, shoulderX is strictly pushed outside the path corridor (depth * PATH_HALF + 16)
+      // so trees line the sides with plenty of clear open road in the middle.
+      const distMul = isDark ? 0.95 : (isField ? 1.45 : 1.0);
+      const shoulderX = (depth * 1.38 + 18) * (tree.offset * 0.85) * distMul;
+      const screenX = W/2 + tree.side * shoulderX + curveOff;
+      const screenY = HORIZON + (H - HORIZON) * tree.z;
+
+      // Allow large foreground trees to bleed past the canvas edge naturally
+      if (screenX < -120 || screenX > W + 120 || screenY > H + 30) return;
+
+      // Scale modifier (bigger trees in dense forest)
+      const scaleMul = isDark ? 1.25 : (isField ? 0.90 : 1.15);
+      const sc = (0.24 + tree.z * 1.45) * tree.scaleVar * scaleMul;
+      const bY = Math.min(screenY + 4, H);
+      const sway = Math.sin(windTime + tree.swaySeed) * (2.4 * sc);
+
+      // Realistic soft ground shadow
+      ctx.save();
+      ctx.globalAlpha = (0.26 + (isDark ? 0.15 : 0)) * tree.z;
+      ctx.fillStyle = '#061205';
+      ctx.beginPath();
+      ctx.ellipse(screenX, bY, 18*sc, 5.5*sc, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+
+      // Render tree species or open field foliage
+      if (tree.type === 'gran') {
+        drawSpruceTree(screenX, bY, sc, sway, isDark);
+      } else if (tree.type === 'tall') {
+        drawPineTree(screenX, bY, sc, sway, isDark);
+      } else {
+        drawForestBush(screenX, bY, sc, isDark);
+      }
+
+      if (walking) {
+        tree.z += 0.0065;
+        if (tree.z > 1.05) {
+          tree.z = 0.01;
+          tree.side = Math.random() > 0.5 ? 1 : -1;
+          const isInner = Math.random() > 0.35;
+          if (isDark) {
+            tree.type = 'gran';
+            tree.offset = isInner ? 1.20 : 1.55;
+          } else if (isField) {
+            tree.type = Math.random() < 0.65 ? 'buske' : 'tall';
+            tree.offset = 1.45 + Math.random() * 0.4;
+          } else {
+            tree.type = Math.random() < 0.72 ? 'gran' : 'buske';
+            tree.offset = isInner ? (1.22 + Math.random() * 0.12) : (1.60 + Math.random() * 0.25);
+          }
+        }
+      }
+    });
+  }
+
+  // ------------------------------------------------------------
+  // LEAF PARTICLES & FLOATING FOREST POLLEN
+  // ------------------------------------------------------------
   let leaves = [];
   function initLeaves() {
-    leaves = Array.from({length:10}, () => ({
+    leaves = Array.from({length:14}, () => ({
       x: Math.random()*W, y: HORIZON + Math.random()*(H-HORIZON),
-      vy: .15+Math.random()*.3, vx: -.1+Math.random()*.2,
-      sz: 2.5+Math.random()*3.5,
-      c: ['#6b4a1e','#8a6030','#7a5528'][Math.floor(Math.random()*3)],
+      vy: .18+Math.random()*.32, vx: -.15+Math.random()*.3,
+      sz: 2.2+Math.random()*3.5,
+      c: ['#8a5e2c','#744e22','#567a28','#9a7138'][Math.floor(Math.random()*4)],
       r: Math.random()*360
     }));
   }
@@ -423,9 +1087,40 @@ window.onload = function() {
       ctx.fillStyle = l.c;
       ctx.beginPath(); ctx.ellipse(0,0,l.sz,l.sz*0.45,0,0,Math.PI*2); ctx.fill();
       ctx.restore();
-      l.y += l.vy; l.x += l.vx; l.r += 0.2;
-      if (l.y > H+5) { l.y = HORIZON-5; l.x = Math.random()*W; }
+      l.y += l.vy; l.x += l.vx; l.r += 0.25;
+      if (l.y > H+6) { l.y = HORIZON-5; l.x = Math.random()*W; }
     });
+  }
+
+  // Paw dust puffs behind dogs while running
+  const pawPuffs = [];
+  function updateAndDrawPawPuffs() {
+    if (walking && Math.random() < 0.3) {
+      pawPuffs.push({
+        x: W/2 + (Math.random() - 0.5) * 50,
+        y: H - 8,
+        r: 2 + Math.random() * 2,
+        alpha: 0.35,
+        vy: -0.35 - Math.random() * 0.3
+      });
+    }
+    for (let i = pawPuffs.length - 1; i >= 0; i--) {
+      const p = pawPuffs[i];
+      p.y += p.vy;
+      p.r += 0.25;
+      p.alpha -= 0.018;
+      if (p.alpha <= 0) {
+        pawPuffs.splice(i, 1);
+        continue;
+      }
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = '#bfa588';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
   }
 
   function renderFrame() {
@@ -433,10 +1128,12 @@ window.onload = function() {
     drawGroundPlane();
     drawTrees();
     drawLeaves();
+    updateAndDrawPawPuffs();
+    drawOverhangingCanopy();
   }
 
   // ============================================================
-  // MAIN LOOP
+  // MAIN ANIMATION LOOP
   // ============================================================
   let raf = null, tailT = 0, dogBob = 0, patterTick = 0;
 
@@ -444,43 +1141,55 @@ window.onload = function() {
     tailT += 0.20;
     renderFrame();
 
-    const bobY = walking ? Math.sin(dogBob) * 3.2 : 0;
+    const bobY = walking ? Math.sin(dogBob) * 3.4 : 0;
     if (walking) {
-      dogBob += 0.15;
+      dogBob += 0.16;
       patterTick++;
-      if (patterTick % 9 === 0) SFX.patter();
+      if (patterTick % 8 === 0) SFX.patter();
     }
-    const sc = 1 + (G.level - 1) * 0.10;
-    const lean = steerX * 10;
-    const xOff = steerX * 22;
-    elDogs.style.transform = `translateX(calc(-50% + ${xOff}px)) translateY(${bobY}px) scale(${Math.min(sc,1.5)}) rotate(${lean}deg)`;
+    const sc = 1.15 + (G.level - 1) * 0.10;
+    const lean = steerX * 9;
+    const xOff = steerX * 24;
+    elDogs.style.transform = `translateX(calc(-50% + ${xOff}px)) translateY(${bobY}px) scale(${Math.min(sc,1.60)}) rotate(${lean}deg)`;
 
-    elTL.setAttribute('d', `M21 73 Q${8+Math.sin(tailT)*5} ${62+Math.cos(tailT)*3} 12 51`);
-    elTR.setAttribute('d', `M129 73 Q${142+Math.sin(tailT)*5} ${62+Math.cos(tailT)*3} 138 51`);
+    // Wagging tails
+    elTL.setAttribute('d', `M21 73 Q${8+Math.sin(tailT)*6} ${62+Math.cos(tailT)*3.5} 12 51`);
+    elTR.setAttribute('d', `M129 73 Q${142+Math.sin(tailT)*6} ${62+Math.cos(tailT)*3.5} 138 51`);
 
+    // Animated ears & paws while running
     if (walking) {
       const trot = Math.sin(tailT*1.3);
-      if (elLegL1) elLegL1.setAttribute('y', 87 + trot*2);
-      if (elLegR1) elLegR1.setAttribute('y', 87 - trot*2);
+      if (elLegL1) elLegL1.setAttribute('y', 87 + trot*2.2);
+      if (elLegR1) elLegR1.setAttribute('y', 87 - trot*2.2);
+      if (elEarL) elEarL.setAttribute('transform', `rotate(${-13 + trot*6} 29 56)`);
+      if (elEarR) elEarR.setAttribute('transform', `rotate(${-13 - trot*6} 91 56)`);
     }
 
     raf = requestAnimationFrame(loop);
   }
 
   // ============================================================
-  // GAME LOGIC
+  // GAME LOGIC & WALK ADVENTURE
   // ============================================================
   const G = {
-    hp:3, score:0, level:1, wins:0, phase:'idle', enemy:null,
+    hp:3, score:0, level:1, wins:0, treats:3, phase:'idle', enemy:null,
 
     rnd(a) { return a[Math.floor(Math.random()*a.length)]; },
     setSt(html) { elSt.innerHTML = html; },
-    updHP() { elHp.forEach((el,i) => { el.style.opacity = i<this.hp?'1':'0.25'; el.style.transform = i<this.hp?'scale(1)':'scale(0.8)'; }); },
+    updHP() {
+      elHp.forEach((el,i) => {
+        el.style.opacity = i<this.hp?'1':'0.25';
+        el.style.transform = i<this.hp?'scale(1)':'scale(0.8)';
+      });
+    },
+    updTreats() {
+      if (elTreatCnt) elTreatCnt.textContent = this.treats;
+    },
 
     flash(msg, good) {
       elFlash.style.animation = 'none'; void elFlash.offsetWidth; elFlash.style.animation = 'flashPop .2s ease-out';
       elFlash.textContent = msg;
-      elFlash.style.color = good ? '#90ff90' : '#ff9090';
+      elFlash.style.color = good ? '#9aff9a' : '#ff9a9a';
       elFlash.style.display = 'block';
       clearTimeout(this._ft);
       this._ft = setTimeout(() => elFlash.style.display = 'none', 1400);
@@ -491,7 +1200,7 @@ window.onload = function() {
       arr.forEach(b => {
         const d = document.createElement('div');
         d.className = 'gb ' + (b.cls||'');
-        d.textContent = b.label;
+        d.innerHTML = b.label + (b.kb ? ` <span class="kb">[${b.kb}]</span>` : '');
         d.onclick = () => { SFX.init(); b.fn(); };
         elBtns.appendChild(d);
       });
@@ -499,10 +1208,15 @@ window.onload = function() {
 
     start() {
       SFX.init(); SFX.victory();
-      this.hp=3; this.score=0; this.level=1; this.wins=0;
+      this.hp=3; this.score=0; this.level=1; this.wins=0; this.treats=3;
+      distanceM = 0;
+      currentBiome = 'normal_forest';
+      targetBiomeBlend = { darkness: 0, treeDensity: 1.0, canopyArch: 0, fieldGlow: 0 };
+      biomeBlend = { darkness: 0, treeDensity: 1.0, canopyArch: 0, fieldGlow: 0 };
       elLv.textContent = 1; elScore.textContent = 0;
+      if (elDist) elDist.textContent = 0;
       elPace.textContent = PACE_NAMES[1];
-      this.updHP(); initLeaves();
+      this.updHP(); this.updTreats(); initLeaves();
       walking = false; currentCurve = 0; targetCurve = 0; camAngle = 0;
       steerX = 0; targetSteerX = 0;
       if (!raf) loop();
@@ -521,25 +1235,57 @@ window.onload = function() {
       const cross = this.rnd(CROSSINGS);
       elBiome.textContent = cross.icon + ' ' + cross.name;
       elBiome.style.display = 'block';
-      this.setSt(`En <strong>${cross.name}</strong> dyker upp framför er!`);
-      this.showBtns(cross.dirs.map(d => ({
-        label: d.l, cls: 'pt',
+      this.setSt(`En <strong>${cross.name}</strong> dyker upp framför er! Vart vill ni gå?`);
+      this.showBtns(cross.dirs.map((d, i) => ({
+        label: d.l, cls: 'pt', kb: String(i + 1),
         fn: () => {
           elBiome.style.display = 'none';
-          this.setSt('Hundarna travar iväg längs stigen...');
+
+          // Apply biome transition based on path choice!
+          currentBiome = d.biome || 'normal_forest';
+          if (currentBiome === 'dense_forest') {
+            targetBiomeBlend = { darkness: 0.95, treeDensity: 1.6, canopyArch: 1.0, fieldGlow: 0 };
+            this.setSt(`🌲 <strong>Djupa stigen:</strong> ${d.desc || 'Trollskogens träd täcker över stigen som ett valv...'}`);
+          } else if (currentBiome === 'open_field') {
+            targetBiomeBlend = { darkness: -0.4, treeDensity: 0.35, canopyArch: 0, fieldGlow: 1.0 };
+            this.setSt(`🌾 <strong>Öppna fältet:</strong> ${d.desc || 'Stigen leder ut mot öppna, soliga åkrar och vidsträckt himmel...'}`);
+          } else {
+            targetBiomeBlend = { darkness: 0, treeDensity: 1.0, canopyArch: 0, fieldGlow: 0 };
+            this.setSt('Hundarna travar iväg längs den friska skogsstigen...');
+          }
+
           walking = true;
           setCurve(d.v, true);
           SFX.swerve(d.v > 0 ? 1.2 : d.v < 0 ? 0.85 : 1);
-          // Give the player active steering controls while walking
+
+          // Give player steering options
           this.showBtns([
-            {label:'◀ Sväng', cls:'steer', fn:()=>this.steer(-1)},
-            {label:'🐾 Håll spåret', cls:'', fn:()=>{ targetSteerX=0; SFX.patter(); }},
-            {label:'Sväng ▶', cls:'steer', fn:()=>this.steer(1)},
+            {label:'◀ Sväng', cls:'steer', kb:'A', fn:()=>this.steer(-1)},
+            {label:'🐾 Håll spåret', cls:'', kb:'S', fn:()=>{ targetSteerX=0; SFX.patter(); }},
+            {label:'Sväng ▶', cls:'steer', kb:'D', fn:()=>this.steer(1)},
           ]);
+
+          // Opportunity for random trail discovery!
+          const roll = Math.random();
+          if (roll < 0.38) {
+            setTimeout(() => {
+              const item = this.rnd(FOREST_FINDS);
+              this.score += item.pts;
+              elScore.textContent = this.score;
+              if (item.giveTreat) {
+                this.treats++;
+                this.updTreats();
+              }
+              SFX.foundItem();
+              this.flash(`Hittat: ${item.name} +${item.pts}p`, true);
+              this.setSt(`🐾 <strong>Fynd vid stigen!</strong> Hundarna fann ${item.name}<br><span class="loot-hint">${item.msg} (+${item.pts}p)</span>`);
+            }, 800);
+          }
+
           setTimeout(() => {
             walking = false;
             this.spawnEnemy();
-          }, 1900);
+          }, 2400);
         }
       })));
     },
@@ -566,11 +1312,35 @@ window.onload = function() {
 
     fightPhase() {
       this.phase = 'fighting';
-      this.showBtns([
-        {label:'🗣 Skälla',cls:'at', fn:()=>this.attack('skälla')},
-        {label:'🦘 Hoppa', cls:'at', fn:()=>this.attack('hoppa')},
-        {label:'🦷 Bita',  cls:'at', fn:()=>this.attack('bita')},
-      ]);
+      const btns = [
+        {label:'🗣 Skälla', cls:'at', kb:'1', fn:()=>this.attack('skälla')},
+        {label:'🦘 Hoppa',  cls:'at', kb:'2', fn:()=>this.attack('hoppa')},
+        {label:'🦷 Bita',   cls:'at', kb:'3', fn:()=>this.attack('bita')},
+      ];
+      if (this.treats > 0) {
+        btns.push({
+          label:`🦴 Godis (${this.treats})`, cls:'treat-btn', kb:'G',
+          fn:()=>this.useTreat()
+        });
+      }
+      this.showBtns(btns);
+    },
+
+    useTreat() {
+      if (this.phase !== 'fighting' || this.treats <= 0) return;
+      this.phase = 'resolving';
+      this.treats--;
+      this.updTreats();
+      SFX.treat();
+      elEnemy.classList.remove('near');
+      setTimeout(() => elEnemy.style.display = 'none', 700);
+
+      this.score += 15;
+      elScore.textContent = this.score;
+      this.flash('Mums! Djuret är nöjt 🦴', true);
+      this.setSt(`<strong>Smart drag!</strong> Du kastade en godisbit till ${this.enemy.name}. Den tuggar nöjt och lufsar fredligt in i skogen! (+15p)`);
+
+      setTimeout(() => this.crossPhase(), 1600);
     },
 
     attack(type) {
@@ -618,19 +1388,35 @@ window.onload = function() {
 
     gameOver() {
       this.phase = 'idle';
-      this.setSt(`Promenaden tog slut! Nivå ${this.level} — ${this.score}p`);
-      this.flash('Spel över 🐾', false);
+      const curScore = this.score;
+      if (curScore > savedBestScore) {
+        savedBestScore = curScore;
+        localStorage.setItem('hundpromenad_highscore', savedBestScore);
+        if (elBest) elBest.textContent = savedBestScore;
+        this.flash('🏆 Nytt rekord!', true);
+      }
+      this.setSt(`Promenaden tog slut! Ni gick <strong>${Math.floor(distanceM)} meter</strong> (Nivå ${this.level}) och fick <strong>${this.score} poäng</strong>.`);
+      this.flash('Trötta tassar 🐾', false);
       elBiome.style.display = 'none';
-      this.showBtns([{label:'🐕 Ny promenad', cls:'primary', fn:()=>this.start()}]);
+      this.showBtns([{label:'🐕 Ny promenad', cls:'primary', kb:'Mellanslag', fn:()=>this.start()}]);
     }
   };
-  window.G = G; // expose globally so onclick="G.start()" in the HTML markup can reach it
+  window.G = G;
 
-  // ---- Keyboard steering (from v5) ----
+  // ---- Keyboard controls ----
   window.addEventListener('keydown', (e) => {
-    if (!walking) return;
-    if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') G.steer(-1);
-    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') G.steer(1);
+    if (walking) {
+      if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') G.steer(-1);
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') G.steer(1);
+      if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') { targetSteerX = 0; SFX.patter(); }
+    } else if (G.phase === 'fighting') {
+      if (e.key === '1') G.attack('skälla');
+      if (e.key === '2') G.attack('hoppa');
+      if (e.key === '3') G.attack('bita');
+      if ((e.key === 'g' || e.key === 'G') && G.treats > 0) G.useTreat();
+    } else if (G.phase === 'idle') {
+      if (e.key === ' ' || e.key === 'Enter') G.start();
+    }
   });
 
   // ---- Boot ----
