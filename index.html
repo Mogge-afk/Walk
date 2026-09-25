@@ -1394,10 +1394,10 @@ window.onload = function() {
       patterTick++;
       if (patterTick % 8 === 0) SFX.patter();
     }
-    const sc = 1.15 + (G.level - 1) * 0.10;
+    const sc = 0.86 + (G.level - 1) * 0.075;
     const lean = steerX * 9;
     const xOff = steerX * 24;
-    elDogs.style.transform = `translateX(calc(-50% + ${xOff}px)) translateY(${bobY}px) scale(${Math.min(sc,1.60)}) rotate(${lean}deg)`;
+    elDogs.style.transform = `translateX(calc(-50% + ${xOff}px)) translateY(${bobY}px) scale(${Math.min(sc,1.20)}) rotate(${lean}deg)`;
 
     // Wagging tails
     elTL.setAttribute('d', `M21 73 Q${8+Math.sin(tailT)*6} ${62+Math.cos(tailT)*3.5} 12 51`);
